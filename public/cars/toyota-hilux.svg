@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 860 380">
+  <defs>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#9EA4B0"/>
+      <stop offset="38%" stop-color="#7C828F"/>
+      <stop offset="100%" stop-color="#52575E"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff" stop-opacity="0.30"/>
+      <stop offset="40%" stop-color="#fff" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.22"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#C0D8EC" stop-opacity="0.88"/>
+      <stop offset="55%" stop-color="#72A4C8" stop-opacity="0.80"/>
+      <stop offset="100%" stop-color="#3E78A0" stop-opacity="0.68"/>
+    </linearGradient>
+    <linearGradient id="bed" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#686D78"/>
+      <stop offset="100%" stop-color="#42464E"/>
+    </linearGradient>
+    <radialGradient id="rim" cx="36%" cy="33%" r="68%">
+      <stop offset="0%" stop-color="#B0BBC8"/>
+      <stop offset="48%" stop-color="#586272"/>
+      <stop offset="100%" stop-color="#10141A"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Ground shadow -->
+  <ellipse cx="430" cy="350" rx="340" ry="16" fill="#000" opacity="0.16"/>
+
+  <!-- PICKUP BED (drawn first, behind cab) -->
+  <!-- Bed walls -->
+  <path d="
+    M 508 165 L 770 165
+    C 790 168 804 184 808 208
+    C 816 234 816 262 810 284 L 807 295
+    L 742 295 Q 680 228 618 295
+    L 508 295 L 508 165 Z
+  " fill="url(#body)"/>
+  <path d="
+    M 508 165 L 770 165
+    C 790 168 804 184 808 208
+    C 816 234 816 262 810 284 L 807 295
+    L 742 295 Q 680 228 618 295
+    L 508 295 L 508 165 Z
+  " fill="url(#shine)"/>
+  <!-- Bed inner floor / interior darkness -->
+  <path d="M 510 172 L 770 172 L 770 285 L 510 285 Z" fill="url(#bed)" opacity="0.85"/>
+  <!-- Bed rails -->
+  <path d="M 508 163 L 772 163" stroke="#8A8E98" stroke-width="4" stroke-linecap="square"/>
+  <path d="M 508 168 L 772 168" stroke="#606470" stroke-width="2" stroke-linecap="square"/>
+  <!-- Bed inner walls -->
+  <line x1="512" y1="172" x2="512" y2="284" stroke="#505460" stroke-width="3"/>
+  <line x1="770" y1="172" x2="770" y2="284" stroke="#505460" stroke-width="3"/>
+  <!-- Tailgate -->
+  <path d="M 806 225 L 814 235 L 814 270 L 804 270 L 800 252 Z" fill="#FF1818" opacity="0.92"/>
+  <path d="M 806 225 L 814 235 L 814 246 L 808 246 Z" fill="#FF9090" opacity="0.55"/>
+  <!-- Bed tie-down rails -->
+  <rect x="540" y="173" width="6" height="108" rx="3" fill="#505460" opacity="0.7"/>
+  <rect x="640" y="173" width="6" height="108" rx="3" fill="#505460" opacity="0.7"/>
+  <rect x="740" y="173" width="6" height="108" rx="3" fill="#505460" opacity="0.7"/>
+
+  <!-- CAB BODY -->
+  <path d="
+    M 65 295 C 50 276 44 250 58 226
+    L 95 200 C 117 184 155 175 196 175
+    L 215 150 C 228 132 248 119 272 115
+    L 298 94 L 490 92 L 518 115
+    L 518 175 L 508 175
+    L 508 295
+    L 248 295 Q 188 226 128 295 Z
+  " fill="url(#body)"/>
+  <path d="
+    M 65 295 C 50 276 44 250 58 226
+    L 95 200 C 117 184 155 175 196 175
+    L 215 150 C 228 132 248 119 272 115
+    L 298 94 L 490 92 L 518 115
+    L 518 175 L 508 175
+    L 508 295
+    L 248 295 Q 188 226 128 295 Z
+  " fill="url(#shine)"/>
+
+  <!-- GLASS (double cab — 2 windows) -->
+  <path d="
+    M 210 175 C 232 150 254 124 276 116
+    L 300 94 L 490 92 L 520 116 L 516 175 Z
+  " fill="url(#glass)"/>
+  <path d="M 240 134 L 280 116 L 334 94 L 298 118 Z" fill="#fff" opacity="0.12"/>
+  <path d="M 454 92 L 494 92 L 508 120 L 472 120 Z" fill="#fff" opacity="0.08"/>
+
+  <!-- B-pillar (cab) -->
+  <path d="M 352 92 L 348 175 L 360 175 L 358 92 Z" fill="#686D78"/>
+
+  <!-- Character line -->
+  <path d="M 104 198 Q 310 182 510 184" fill="none" stroke="rgba(255,255,255,0.20)" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Sill plate -->
+  <path d="M 132 280 L 508 280 L 508 295 L 132 295 Z" fill="#52575E" opacity="0.65"/>
+  <!-- Cab-to-bed gap -->
+  <path d="M 508 165 L 508 295" stroke="#3A3D44" stroke-width="5"/>
+
+  <!-- Body trim -->
+  <path d="M 200 175 L 508 175" stroke="rgba(0,0,0,0.12)" stroke-width="2"/>
+
+  <!-- HEADLIGHT — aggressive truck look -->
+  <path d="M 60 225 L 96 210 L 106 226 L 84 240 Z" fill="#FFF8CC" opacity="0.95"/>
+  <path d="M 62 218 L 94 207" stroke="#FFE044" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+  <path d="M 53 229 L 33 238 L 35 248 L 54 238 Z" fill="#FFFBE0" opacity="0.18"/>
+  <!-- Front bumper (large truck bumper) -->
+  <path d="M 58 246 L 98 238 L 98 284 L 56 288 L 52 265 Z" fill="#5A5E66" opacity="0.85"/>
+  <!-- Grille -->
+  <line x1="61" y1="252" x2="97" y2="246" stroke="#333" stroke-width="2" opacity="0.6"/>
+  <line x1="61" y1="260" x2="97" y2="254" stroke="#333" stroke-width="2" opacity="0.6"/>
+  <line x1="61" y1="268" x2="97" y2="262" stroke="#333" stroke-width="2" opacity="0.6"/>
+  <line x1="61" y1="276" x2="97" y2="270" stroke="#333" stroke-width="2" opacity="0.6"/>
+  <!-- Tow hook -->
+  <circle cx="72" cy="284" r="5" fill="#444850" opacity="0.9"/>
+  <circle cx="72" cy="284" r="3" fill="#333638"/>
+
+  <!-- SKID PLATE -->
+  <path d="M 57 280 L 96 274 L 96 290 L 57 290 Z" fill="#48494E" opacity="0.9"/>
+
+  <!-- FRONT WHEEL — large off-road -->
+  <circle cx="188" cy="295" r="64" fill="#0C1018"/>
+  <circle cx="188" cy="295" r="56" fill="#080C12"/>
+  <circle cx="188" cy="295" r="39" fill="url(#rim)"/>
+  <line x1="188" y1="260" x2="188" y2="273" stroke="#9AAABB" stroke-width="6" stroke-linecap="round"/>
+  <line x1="188" y1="317" x2="188" y2="330" stroke="#9AAABB" stroke-width="6" stroke-linecap="round"/>
+  <line x1="153" y1="295" x2="166" y2="295" stroke="#9AAABB" stroke-width="6" stroke-linecap="round"/>
+  <line x1="210" y1="295" x2="223" y2="295" stroke="#9AAABB" stroke-width="6" stroke-linecap="round"/>
+  <line x1="163" y1="270" x2="172.5" y2="279.5" stroke="#9AAABB" stroke-width="6" stroke-linecap="round"/>
+  <line x1="203.5" y1="310.5" x2="213" y2="320" stroke="#9AAABB" stroke-width="6" stroke-linecap="round"/>
+  <line x1="163" y1="320" x2="172.5" y2="310.5" stroke="#9AAABB" stroke-width="6" stroke-linecap="round"/>
+  <line x1="203.5" y1="279.5" x2="213" y2="270" stroke="#9AAABB" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="188" cy="295" r="12" fill="#C4CDD8"/>
+  <circle cx="188" cy="295" r="6" fill="#6A7888"/>
+  <path d="M 135 268 A 56 56 0 0 1 172 252" fill="none" stroke="#fff" stroke-width="3.5" stroke-opacity="0.10" stroke-linecap="round"/>
+
+  <!-- REAR WHEEL -->
+  <circle cx="680" cy="295" r="64" fill="#0C1018"/>
+  <circle cx="680" cy="295" r="56" fill="#080C12"/>
+  <circle cx="680" cy="295" r="39" fill="url(#rim)"/>
+  <line x1="680" y1="260" x2="680" y2="273" stroke="#9AAABB" stroke-width="6" stroke-linecap="round"/>
+  <line x1="680" y1="317" x2="680" y2="330" stroke="#9AAABB" stroke-width="6" stroke-linecap="round"/>
+  <line x1="645" y1="295" x2="658" y2="295" stroke="#9AAABB" stroke-width="6" stroke-linecap="round"/>
+  <line x1="702" y1="295" x2="715" y2="295" stroke="#9AAABB" stroke-width="6" stroke-linecap="round"/>
+  <line x1="655" y1="270" x2="664.5" y2="279.5" stroke="#9AAABB" stroke-width="6" stroke-linecap="round"/>
+  <line x1="695.5" y1="310.5" x2="705" y2="320" stroke="#9AAABB" stroke-width="6" stroke-linecap="round"/>
+  <line x1="655" y1="320" x2="664.5" y2="310.5" stroke="#9AAABB" stroke-width="6" stroke-linecap="round"/>
+  <line x1="695.5" y1="279.5" x2="705" y2="270" stroke="#9AAABB" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="680" cy="295" r="12" fill="#C4CDD8"/>
+  <circle cx="680" cy="295" r="6" fill="#6A7888"/>
+  <path d="M 627 268 A 56 56 0 0 1 664 252" fill="none" stroke="#fff" stroke-width="3.5" stroke-opacity="0.10" stroke-linecap="round"/>
+</svg>

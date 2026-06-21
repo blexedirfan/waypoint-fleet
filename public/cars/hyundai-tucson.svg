@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 380">
+  <defs>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#E2E5EC"/>
+      <stop offset="35%" stop-color="#C7CBD4"/>
+      <stop offset="100%" stop-color="#8E9299"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff" stop-opacity="0.38"/>
+      <stop offset="38%" stop-color="#fff" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.22"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#C5DCF0" stop-opacity="0.88"/>
+      <stop offset="55%" stop-color="#78AACC" stop-opacity="0.80"/>
+      <stop offset="100%" stop-color="#457EA0" stop-opacity="0.68"/>
+    </linearGradient>
+    <radialGradient id="rim" cx="36%" cy="33%" r="68%">
+      <stop offset="0%" stop-color="#B0BBC8"/>
+      <stop offset="48%" stop-color="#586272"/>
+      <stop offset="100%" stop-color="#10141A"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Ground shadow -->
+  <ellipse cx="395" cy="348" rx="305" ry="15" fill="#000" opacity="0.16"/>
+
+  <!-- BODY — taller SUV silhouette -->
+  <path d="
+    M 70 295 C 55 276 49 252 63 230
+    L 98 206 C 118 192 152 183 188 183
+    L 204 158 C 218 140 238 128 262 124
+    L 288 103 L 496 101 L 528 124
+    L 660 156 C 682 160 700 178 706 202
+    C 716 226 718 256 712 278 L 709 295
+    L 650 295 Q 590 232 530 295
+    L 248 295 Q 188 232 128 295 Z
+  " fill="url(#body)"/>
+  <path d="
+    M 70 295 C 55 276 49 252 63 230
+    L 98 206 C 118 192 152 183 188 183
+    L 204 158 C 218 140 238 128 262 124
+    L 288 103 L 496 101 L 528 124
+    L 660 156 C 682 160 700 178 706 202
+    C 716 226 718 256 712 278 L 709 295
+    L 650 295 Q 590 232 530 295
+    L 248 295 Q 188 232 128 295 Z
+  " fill="url(#shine)"/>
+
+  <!-- GLASS -->
+  <path d="
+    M 200 183 C 222 158 244 132 268 125
+    L 290 103 L 496 101 L 530 125 L 527 183 Z
+  " fill="url(#glass)"/>
+  <path d="M 228 140 L 272 124 L 326 102 L 290 124 Z" fill="#fff" opacity="0.12"/>
+  <path d="M 466 102 L 508 102 L 520 127 L 483 127 Z" fill="#fff" opacity="0.08"/>
+
+  <!-- B-pillar -->
+  <path d="M 352 101 L 348 183 L 360 183 L 358 101 Z" fill="#B0B4BC"/>
+
+  <!-- Roof rails -->
+  <path d="M 290 100 L 496 98" stroke="#AAAAAA" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M 310 105 L 480 103" stroke="#CCCCCC" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- Chrome character line -->
+  <path d="M 104 203 Q 400 188 705 200" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Lower body cladding -->
+  <path d="M 132 275 L 650 275 L 650 295 L 132 295 Z" fill="#888C94" opacity="0.55"/>
+  <path d="M 132 272 L 650 272" stroke="rgba(0,0,0,0.18)" stroke-width="1.5"/>
+  <!-- Door line -->
+  <path d="M 200 183 L 527 183" stroke="rgba(255,255,255,0.12)" stroke-width="1.5"/>
+
+  <!-- Skid plate front -->
+  <path d="M 66 264 L 98 258 L 98 278 L 66 280 Z" fill="#7A7E86" opacity="0.8"/>
+
+  <!-- FRONT HEADLIGHT — modern slim LED -->
+  <path d="M 63 228 L 96 215 L 106 228 L 86 242 Z" fill="#FFF8CC" opacity="0.95"/>
+  <path d="M 65 221 L 94 210" stroke="#FFE044" stroke-width="3" stroke-linecap="round" opacity="0.9"/>
+  <path d="M 56 232 L 36 241 L 38 250 L 57 241 Z" fill="#FFFBE0" opacity="0.18"/>
+  <!-- DRL strip -->
+  <path d="M 64 245 L 97 240" stroke="#FFE8AA" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+  <!-- Front grille area -->
+  <path d="M 66 250 L 97 244 L 97 270 L 66 274 Z" fill="#222428" opacity="0.75"/>
+  <line x1="68" y1="254" x2="96" y2="250" stroke="#333" stroke-width="1.5" opacity="0.55"/>
+  <line x1="68" y1="260" x2="96" y2="256" stroke="#333" stroke-width="1.5" opacity="0.55"/>
+  <line x1="68" y1="266" x2="96" y2="262" stroke="#333" stroke-width="1.5" opacity="0.55"/>
+
+  <!-- TAILLIGHT — modern SUV wrap-around -->
+  <path d="M 710 228 L 720 238 L 720 268 L 710 268 L 706 253 Z" fill="#FF1A1A" opacity="0.92"/>
+  <path d="M 710 228 L 720 238 L 720 248 L 712 248 Z" fill="#FF9090" opacity="0.55"/>
+  <path d="M 720 268 L 720 280 L 710 278 Z" fill="#FF5555" opacity="0.50"/>
+
+  <!-- FRONT WHEEL -->
+  <circle cx="188" cy="295" r="58" fill="#0C1018"/>
+  <circle cx="188" cy="295" r="51" fill="#080C12"/>
+  <circle cx="188" cy="295" r="36" fill="url(#rim)"/>
+  <line x1="188" y1="263" x2="188" y2="275" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="188" y1="315" x2="188" y2="327" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="156" y1="295" x2="168" y2="295" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="208" y1="295" x2="220" y2="295" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="165.5" y1="272.5" x2="174" y2="281" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="202" y1="309" x2="210.5" y2="317.5" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="165.5" y1="317.5" x2="174" y2="309" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="202" y1="281" x2="210.5" y2="272.5" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <circle cx="188" cy="295" r="11" fill="#C4CDD8"/>
+  <circle cx="188" cy="295" r="5.5" fill="#6A7888"/>
+  <path d="M 140 270 A 51 51 0 0 1 174 255" fill="none" stroke="#fff" stroke-width="3" stroke-opacity="0.10" stroke-linecap="round"/>
+
+  <!-- REAR WHEEL -->
+  <circle cx="590" cy="295" r="58" fill="#0C1018"/>
+  <circle cx="590" cy="295" r="51" fill="#080C12"/>
+  <circle cx="590" cy="295" r="36" fill="url(#rim)"/>
+  <line x1="590" y1="263" x2="590" y2="275" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="590" y1="315" x2="590" y2="327" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="558" y1="295" x2="570" y2="295" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="610" y1="295" x2="622" y2="295" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="567.5" y1="272.5" x2="576" y2="281" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="604" y1="309" x2="612.5" y2="317.5" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="567.5" y1="317.5" x2="576" y2="309" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="604" y1="281" x2="612.5" y2="272.5" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <circle cx="590" cy="295" r="11" fill="#C4CDD8"/>
+  <circle cx="590" cy="295" r="5.5" fill="#6A7888"/>
+  <path d="M 542 270 A 51 51 0 0 1 576 255" fill="none" stroke="#fff" stroke-width="3" stroke-opacity="0.10" stroke-linecap="round"/>
+</svg>

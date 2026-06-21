@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 380">
+  <defs>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3A3F4C"/>
+      <stop offset="40%" stop-color="#23262E"/>
+      <stop offset="100%" stop-color="#0D0F16"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fff" stop-opacity="0.20"/>
+      <stop offset="42%" stop-color="#fff" stop-opacity="0.04"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0.16"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#C8DEF2" stop-opacity="0.88"/>
+      <stop offset="55%" stop-color="#7AAED6" stop-opacity="0.78"/>
+      <stop offset="100%" stop-color="#4880A8" stop-opacity="0.65"/>
+    </linearGradient>
+    <radialGradient id="rim" cx="36%" cy="33%" r="68%">
+      <stop offset="0%" stop-color="#9AAABB"/>
+      <stop offset="48%" stop-color="#4A5668"/>
+      <stop offset="100%" stop-color="#0A0D14"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Ground shadow -->
+  <ellipse cx="395" cy="348" rx="300" ry="15" fill="#000" opacity="0.18"/>
+
+  <!-- BODY -->
+  <path d="
+    M 70 295 C 56 278 50 254 64 234
+    L 98 212 C 116 199 148 191 180 191
+    L 196 167 C 210 149 232 136 258 133
+    L 292 116 L 494 114 L 534 133
+    L 668 162 C 692 166 708 184 714 207
+    C 724 230 726 258 719 280 L 716 295
+    L 658 295 Q 600 237 542 295
+    L 248 295 Q 190 237 132 295 Z
+  " fill="url(#body)"/>
+  <path d="
+    M 70 295 C 56 278 50 254 64 234
+    L 98 212 C 116 199 148 191 180 191
+    L 196 167 C 210 149 232 136 258 133
+    L 292 116 L 494 114 L 534 133
+    L 668 162 C 692 166 708 184 714 207
+    C 724 230 726 258 719 280 L 716 295
+    L 658 295 Q 600 237 542 295
+    L 248 295 Q 190 237 132 295 Z
+  " fill="url(#shine)"/>
+
+  <!-- GLASS -->
+  <path d="
+    M 186 191 C 212 164 238 138 264 134
+    L 294 116 L 494 114 L 535 134 L 532 191 Z
+  " fill="url(#glass)"/>
+  <!-- Glass reflections -->
+  <path d="M 222 148 L 264 134 L 316 114 L 282 134 Z" fill="#fff" opacity="0.11"/>
+  <path d="M 464 114 L 506 114 L 515 136 L 478 136 Z" fill="#fff" opacity="0.07"/>
+
+  <!-- B-pillar -->
+  <path d="M 345 114 L 341 191 L 353 191 L 351 114 Z" fill="#181B24"/>
+
+  <!-- Chrome character line -->
+  <path d="M 104 208 Q 400 194 712 206" fill="none" stroke="rgba(255,255,255,0.13)" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Rocker panel -->
+  <path d="M 135 284 L 656 284 L 656 295 L 135 295 Z" fill="#080A10" opacity="0.50"/>
+  <!-- Door line -->
+  <path d="M 186 191 L 532 191" stroke="rgba(255,255,255,0.07)" stroke-width="1.5"/>
+
+  <!-- FRONT HEADLIGHT -->
+  <path d="M 65 234 L 94 220 L 103 233 L 83 246 Z" fill="#FFF8CC" opacity="0.95"/>
+  <path d="M 66 227 L 92 217" stroke="#FFE044" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/>
+  <path d="M 58 238 L 38 246 L 40 254 L 59 246 Z" fill="#FFFBE0" opacity="0.18"/>
+  <!-- Fog light -->
+  <circle cx="86" cy="264" r="5.5" fill="#FFF0AA" opacity="0.65"/>
+  <!-- Grille area -->
+  <path d="M 70 254 L 79 250 L 86 272 L 76 272 Z" fill="#08090E" opacity="0.78"/>
+
+  <!-- TAILLIGHT -->
+  <path d="M 719 230 L 727 240 L 727 268 L 717 268 L 713 253 Z" fill="#FF1818" opacity="0.92"/>
+  <path d="M 719 230 L 727 240 L 727 248 L 721 248 Z" fill="#FF9090" opacity="0.55"/>
+  <circle cx="700" cy="283" r="4" fill="rgba(255,255,255,0.10)"/>
+
+  <!-- FRONT WHEEL -->
+  <circle cx="190" cy="295" r="55" fill="#0E1118"/>
+  <circle cx="190" cy="295" r="48" fill="#090C12"/>
+  <circle cx="190" cy="295" r="34" fill="url(#rim)"/>
+  <line x1="190" y1="265" x2="190" y2="277" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="190" y1="313" x2="190" y2="325" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="160" y1="295" x2="172" y2="295" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="208" y1="295" x2="220" y2="295" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="169" y1="274" x2="177.5" y2="282.5" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="202.5" y1="307.5" x2="211" y2="316" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="169" y1="316" x2="177.5" y2="307.5" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="202.5" y1="282.5" x2="211" y2="274" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <circle cx="190" cy="295" r="10" fill="#C4CDD8"/>
+  <circle cx="190" cy="295" r="5" fill="#6A7888"/>
+  <path d="M 145 271 A 48 48 0 0 1 178 257" fill="none" stroke="#fff" stroke-width="3" stroke-opacity="0.10" stroke-linecap="round"/>
+
+  <!-- REAR WHEEL -->
+  <circle cx="600" cy="295" r="55" fill="#0E1118"/>
+  <circle cx="600" cy="295" r="48" fill="#090C12"/>
+  <circle cx="600" cy="295" r="34" fill="url(#rim)"/>
+  <line x1="600" y1="265" x2="600" y2="277" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="600" y1="313" x2="600" y2="325" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="570" y1="295" x2="582" y2="295" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="618" y1="295" x2="630" y2="295" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="579" y1="274" x2="587.5" y2="282.5" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="612.5" y1="307.5" x2="621" y2="316" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="579" y1="316" x2="587.5" y2="307.5" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="612.5" y1="282.5" x2="621" y2="274" stroke="#9AAABB" stroke-width="5.5" stroke-linecap="round"/>
+  <circle cx="600" cy="295" r="10" fill="#C4CDD8"/>
+  <circle cx="600" cy="295" r="5" fill="#6A7888"/>
+  <path d="M 555 271 A 48 48 0 0 1 588 257" fill="none" stroke="#fff" stroke-width="3" stroke-opacity="0.10" stroke-linecap="round"/>
+</svg>
