@@ -1781,16 +1781,25 @@ function PersonRow({ icon: Icon, label, value, mono, accent }) {
 
 /* shared topbar slot wrapper so each page can add right-side controls */
 function TopBarSlot({ title, subtitle, children }) {
-  const { setPage, currentUser, unreadCount } = useApp();
+  const { setPage, currentUser, unreadCount, setMobileOpen } = useApp();
   return (
     <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
-      <div className="min-w-0">
-        <h1 className="wp-display text-xl sm:text-2xl font-semibold truncate" style={{ color: C.text }}>
-          {title}
-        </h1>
-        <p className="text-sm truncate" style={{ color: C.muted }}>
-          {subtitle}
-        </p>
+      <div className="flex items-center gap-3 min-w-0">
+        <button
+          className="lg:hidden shrink-0 flex h-9 w-9 items-center justify-center rounded-lg border"
+          style={{ borderColor: C.line }}
+          onClick={() => setMobileOpen(true)}
+        >
+          <Menu size={17} />
+        </button>
+        <div className="min-w-0">
+          <h1 className="wp-display text-xl sm:text-2xl font-semibold truncate" style={{ color: C.text }}>
+            {title}
+          </h1>
+          <p className="text-sm truncate" style={{ color: C.muted }}>
+            {subtitle}
+          </p>
+        </div>
       </div>
       <div className="flex items-center gap-3">{children}</div>
     </div>
@@ -2353,8 +2362,7 @@ function SettingsPage() {
 /* ============================== APP SHELL ============================== */
 
 function AppShell() {
-  const { page } = useApp();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const { page, mobileOpen, setMobileOpen } = useApp();
 
   const PAGES = {
     dashboard: DashboardPage,
@@ -2389,10 +2397,12 @@ export default function App() {
   const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const logout = () => {
     setAuthenticated(false);
     setPage("dashboard");
+    setMobileOpen(false);
   };
 
   const ctxValue = {
@@ -2406,6 +2416,8 @@ export default function App() {
     setNotifications,
     unreadCount,
     logout,
+    mobileOpen,
+    setMobileOpen,
   };
 
   return (
