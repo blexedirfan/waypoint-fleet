@@ -3,3 +3,47 @@
 body {
   margin: 0;
 }
+
+/* ── Light theme defaults ── */
+:root {
+  --wp-paper:        #F3F5FA;
+  --wp-card:         #FFFFFF;
+  --wp-line:         #E7E9F2;
+  --wp-text:         #10131A;
+  --wp-muted:        #6B7280;
+  --wp-slateSoft:    #EEF0F5;
+  --wp-amberSoft:    #FCE8D6;
+  --wp-tealSoft:     #D8F2EE;
+  --wp-indigoSoft:   #E6E6FC;
+  --wp-emeraldSoft:  #DBF5E7;
+  --wp-amberWarnSoft:#FCEFD3;
+  --wp-roseSoft:     #FBE2E3;
+  --wp-rowHover:     #F8F9FC;
+}
+
+/* ── Dark theme overrides ── */
+[data-theme="dark"] {
+  --wp-paper:        #0D1117;
+  --wp-card:         #161B22;
+  --wp-line:         #30363D;
+  --wp-text:         #E6EDF3;
+  --wp-muted:        #8B949E;
+  --wp-slateSoft:    #1C2128;
+  --wp-amberSoft:    #2D1B0E;
+  --wp-tealSoft:     #0D201E;
+  --wp-indigoSoft:   #16163A;
+  --wp-emeraldSoft:  #0D2116;
+  --wp-amberWarnSoft:#2A1A06;
+  --wp-roseSoft:     #2A0D0F;
+  --wp-rowHover:     #1C2128;
+}
+
+/* Override Tailwind's bg-white in dark mode */
+[data-theme="dark"] .bg-white {
+  background-color: var(--wp-card) !important;
+}
+
+/* Smooth theme transition on key containers */
+body, #root {
+  transition: background-color 0.3s ease;
+}

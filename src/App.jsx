@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import {
   Car,
   Calendar,
@@ -63,30 +64,47 @@ import {
 
 /* ============================== DESIGN TOKENS ============================== */
 
+/* Colors that never change between themes */
 const C = {
-  ink: "#0B1220",
-  inkSoft: "#141C2E",
-  inkBorder: "#222C42",
-  inkText: "#9AA6BD",
-  paper: "#F3F5FA",
-  card: "#FFFFFF",
-  line: "#E7E9F2",
-  text: "#10131A",
-  muted: "#6B7280",
-  amber: "#F2994A",
-  amberDeep: "#C96A1B",
-  amberSoft: "#FCE8D6",
-  teal: "#129B8E",
-  tealSoft: "#D8F2EE",
-  indigo: "#5B5FEF",
-  indigoSoft: "#E6E6FC",
-  emerald: "#1FA971",
-  emeraldSoft: "#DBF5E7",
-  amberWarn: "#D98B0E",
-  amberWarnSoft: "#FCEFD3",
-  rose: "#E5484D",
-  roseSoft: "#FBE2E3",
-  slateSoft: "#EEF0F5",
+  ink:          "#0B1220",
+  inkSoft:      "#141C2E",
+  inkBorder:    "#222C42",
+  inkText:      "#9AA6BD",
+  amber:        "#F2994A",
+  amberDeep:    "#C96A1B",
+  teal:         "#129B8E",
+  indigo:       "#5B5FEF",
+  emerald:      "#1FA971",
+  amberWarn:    "#D98B0E",
+  rose:         "#E5484D",
+  /* Theme-variable colors — resolved via CSS custom properties at runtime */
+  paper:        "var(--wp-paper)",
+  card:         "var(--wp-card)",
+  line:         "var(--wp-line)",
+  text:         "var(--wp-text)",
+  muted:        "var(--wp-muted)",
+  slateSoft:    "var(--wp-slateSoft)",
+  amberSoft:    "var(--wp-amberSoft)",
+  tealSoft:     "var(--wp-tealSoft)",
+  indigoSoft:   "var(--wp-indigoSoft)",
+  emeraldSoft:  "var(--wp-emeraldSoft)",
+  amberWarnSoft:"var(--wp-amberWarnSoft)",
+  roseSoft:     "var(--wp-roseSoft)",
+};
+
+const LIGHT_THEME = {
+  paper: "#F3F5FA", card: "#FFFFFF", line: "#E7E9F2",
+  text: "#10131A", muted: "#6B7280", slateSoft: "#EEF0F5",
+  amberSoft: "#FCE8D6", tealSoft: "#D8F2EE", indigoSoft: "#E6E6FC",
+  emeraldSoft: "#DBF5E7", amberWarnSoft: "#FCEFD3", roseSoft: "#FBE2E3",
+  rowHover: "#F8F9FC",
+};
+const DARK_THEME = {
+  paper: "#0D1117", card: "#161B22", line: "#30363D",
+  text: "#E6EDF3", muted: "#8B949E", slateSoft: "#1C2128",
+  amberSoft: "#2D1B0E", tealSoft: "#0D201E", indigoSoft: "#16163A",
+  emeraldSoft: "#0D2116", amberWarnSoft: "#2A1A06", roseSoft: "#2A0D0F",
+  rowHover: "#1C2128",
 };
 
 const STATUS_STYLE = {
@@ -171,6 +189,115 @@ const FONT_FACE = `
   50%       { opacity: 1; }
 }
 .wp-glow-border { animation: wpGlowBorder 3s ease-in-out infinite; }
+
+@keyframes wpNeonPulse {
+  0%, 100% { box-shadow: 0 0 8px var(--glow-c, #F2994A88), 0 0 24px var(--glow-c, #F2994A44); }
+  50%       { box-shadow: 0 0 18px var(--glow-c, #F2994Aaa), 0 0 48px var(--glow-c, #F2994A66); }
+}
+@keyframes wpBorderFlow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes wpSlideRight {
+  from { transform: translateX(-6px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+@keyframes wpParticle {
+  0%   { transform: translateY(0) scale(1);   opacity: 0.6; }
+  100% { transform: translateY(-60px) scale(0); opacity: 0; }
+}
+
+/* ── Glassmorphism card ── */
+.wp-glass {
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+}
+
+/* ── Card hover glow ── */
+.wp-card-hover {
+  transition: transform 0.26s cubic-bezier(0.16,1,0.3,1), box-shadow 0.26s ease, border-color 0.26s ease;
+  cursor: pointer;
+}
+.wp-card-hover:hover {
+  transform: translateY(-5px) scale(1.01);
+  box-shadow: 0 24px 60px -12px rgba(0,0,0,0.18), 0 0 0 1px rgba(242,153,74,0.18);
+  border-color: rgba(242,153,74,0.28) !important;
+}
+
+/* ── Glowing gradient button ── */
+.wp-btn-primary {
+  position: relative; overflow: hidden;
+  background: linear-gradient(135deg, #F2994A, #C96A1B) !important;
+  box-shadow: 0 4px 18px -4px rgba(242,153,74,0.45);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+.wp-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 32px -6px rgba(242,153,74,0.65), 0 0 0 1px rgba(242,153,74,0.3);
+  filter: brightness(1.08);
+}
+.wp-btn-primary:active { transform: scale(0.97) translateY(0); }
+.wp-btn-primary::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.18), transparent 55%);
+  pointer-events: none;
+}
+
+/* ── Secondary / ghost button ── */
+.wp-btn-ghost {
+  transition: all 0.18s ease;
+}
+.wp-btn-ghost:hover {
+  background: rgba(242,153,74,0.08) !important;
+  border-color: rgba(242,153,74,0.35) !important;
+  color: #F2994A !important;
+  box-shadow: 0 0 0 3px rgba(242,153,74,0.10);
+  transform: translateY(-1px);
+}
+.wp-btn-ghost:active { transform: scale(0.97); }
+
+/* ── Nav item hover ── */
+.wp-nav-hover {
+  transition: all 0.18s ease;
+}
+.wp-nav-hover:hover {
+  background: rgba(242,153,74,0.10) !important;
+  transform: translateX(3px);
+  color: rgba(255,255,255,0.9) !important;
+}
+
+/* ── Input focus glow ── */
+.wp-input-glow { transition: box-shadow 0.2s ease, border-color 0.2s ease; }
+.wp-input-glow:focus-within {
+  border-color: rgba(242,153,74,0.5) !important;
+  box-shadow: 0 0 0 3px rgba(242,153,74,0.12), 0 0 16px rgba(242,153,74,0.08) !important;
+}
+
+/* ── Sidebar glow ── */
+.wp-sidebar-shadow {
+  box-shadow: 4px 0 40px rgba(0,0,0,0.5), inset -1px 0 0 rgba(255,255,255,0.04);
+}
+
+/* ── Table row ── */
+.wp-row-hover:hover {
+  background: linear-gradient(90deg, rgba(242,153,74,0.07), var(--wp-rowHover)) !important;
+}
+
+/* ── Stat badge glow ── */
+.wp-badge-active  { box-shadow: 0 0 10px rgba(31,169,113,0.45),  0 0 28px rgba(31,169,113,0.18);  }
+.wp-badge-warn    { box-shadow: 0 0 10px rgba(217,139,14,0.45),   0 0 28px rgba(217,139,14,0.18);  }
+.wp-badge-muted   { box-shadow: 0 0 6px  rgba(107,114,128,0.3); }
+
+/* ── Animated gradient border ── */
+.wp-grad-border {
+  background: linear-gradient(var(--bg,#fff), var(--bg,#fff)) padding-box,
+              linear-gradient(135deg, #F2994A, #129B8E, #5B5FEF, #F2994A) border-box;
+  border: 1.5px solid transparent;
+  background-size: 200% 200%;
+  animation: wpBorderFlow 5s ease infinite;
+}
 `;
 
 /* ============================== MOCK DATA ============================== */
@@ -487,21 +614,34 @@ function Avatar({ name, hue = 220, size = 44 }) {
         height: size,
         fontSize: size * 0.38,
         background: `linear-gradient(135deg, ${bg}, ${bg2})`,
-        boxShadow: `0 6px 16px -6px ${bg}`,
+        boxShadow: `0 6px 16px -6px ${bg}, 0 0 0 2px ${bg}30`,
+        transition: "box-shadow 0.2s ease, transform 0.2s ease",
       }}
+      onMouseEnter={e => { e.currentTarget.style.boxShadow = `0 8px 20px -4px ${bg}, 0 0 0 3px ${bg}55`; e.currentTarget.style.transform = "scale(1.06)"; }}
+      onMouseLeave={e => { e.currentTarget.style.boxShadow = `0 6px 16px -6px ${bg}, 0 0 0 2px ${bg}30`; e.currentTarget.style.transform = "scale(1)"; }}
     >
       {initialsOf(name)}
     </div>
   );
 }
 
+const BADGE_GLOW = {
+  Active:      "wp-badge-active",
+  Maintenance: "wp-badge-warn",
+  Inactive:    "wp-badge-muted",
+};
+
 function StatusBadge({ status }) {
   const s = STATUS_STYLE[status] || STATUS_STYLE.Inactive;
   const Icon = s.icon;
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold wp-body"
-      style={{ color: s.fg, backgroundColor: s.bg }}
+      className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold wp-body ${BADGE_GLOW[status] || ""}`}
+      style={{
+        color: s.fg,
+        backgroundColor: s.bg,
+        transition: "box-shadow 0.2s ease",
+      }}
     >
       <Icon size={13} strokeWidth={2.5} />
       {status}
@@ -1037,8 +1177,7 @@ function AuthScreen({ onAuthenticated }) {
             <button
               onClick={handleSubmit}
               disabled={submitting}
-              className="w-full mt-2 flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold text-white transition-transform active:scale-95 disabled:opacity-70"
-              style={{ background: `linear-gradient(135deg, ${C.amber}, ${C.amberDeep})` }}
+              className="w-full mt-2 flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold text-white disabled:opacity-70 wp-btn-primary"
             >
               {submitting ? (
                 <Loader2 size={16} className="animate-spin" />
@@ -1081,8 +1220,8 @@ function Field({ label, children }) {
 function InputIcon({ icon: Icon, children }) {
   return (
     <div
-      className="flex items-center gap-2.5 rounded-xl border px-3.5 py-2.5 focus-within:ring-2 transition-shadow"
-      style={{ borderColor: C.line, backgroundColor: "#fff" }}
+      className="flex items-center gap-2.5 rounded-xl border px-3.5 py-2.5 wp-input-glow"
+      style={{ borderColor: C.line, backgroundColor: C.card }}
     >
       <Icon size={16} style={{ color: C.muted }} />
       {children}
@@ -1097,10 +1236,13 @@ function Sidebar({ mobileOpen, setMobileOpen }) {
 
   const body = (
     <div className="flex h-full flex-col" style={{ backgroundColor: C.ink }}>
-      <div className="flex items-center gap-2.5 px-6 py-6">
+      {/* Ambient top glow */}
+      <div className="absolute top-0 left-0 right-0 h-40 pointer-events-none" style={{ background: `radial-gradient(ellipse at 50% -10%, rgba(242,153,74,0.12) 0%, transparent 65%)` }} />
+
+      <div className="relative flex items-center gap-2.5 px-6 py-6">
         <div
-          className="flex h-9 w-9 items-center justify-center rounded-xl shrink-0"
-          style={{ background: `linear-gradient(135deg, ${C.amber}, ${C.amberDeep})` }}
+          className="flex h-9 w-9 items-center justify-center rounded-xl shrink-0 wp-btn-primary"
+          style={{ boxShadow: `0 4px 16px rgba(242,153,74,0.45)` }}
         >
           <MapPin size={18} color="#fff" strokeWidth={2.4} />
         </div>
@@ -1109,7 +1251,7 @@ function Sidebar({ mobileOpen, setMobileOpen }) {
         </span>
       </div>
 
-      <nav className="flex-1 px-3 space-y-1 mt-2">
+      <nav className="relative flex-1 px-3 space-y-0.5 mt-2">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           const active = page === item.key;
@@ -1120,24 +1262,41 @@ function Sidebar({ mobileOpen, setMobileOpen }) {
                 setPage(item.key);
                 setMobileOpen(false);
               }}
-              className="relative w-full flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors"
+              className={`relative w-full flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium wp-nav-hover ${active ? "" : ""}`}
               style={{
                 color: active ? "#fff" : C.inkText,
-                backgroundColor: active ? "rgba(242,153,74,0.16)" : "transparent",
+                backgroundColor: active ? "rgba(242,153,74,0.14)" : "transparent",
+                boxShadow: active ? "inset 0 0 24px rgba(242,153,74,0.06), 0 0 0 1px rgba(242,153,74,0.14)" : "none",
               }}
             >
               {active && (
                 <span
-                  className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 rounded-r-full"
-                  style={{ backgroundColor: C.amber }}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 h-6 w-1 rounded-r-full"
+                  style={{
+                    backgroundColor: C.amber,
+                    boxShadow: `0 0 10px ${C.amber}, 0 0 20px ${C.amber}88`,
+                  }}
                 />
               )}
-              <Icon size={17} strokeWidth={2} />
+              <span
+                className="flex items-center justify-center h-7 w-7 rounded-lg shrink-0"
+                style={{
+                  backgroundColor: active ? `${C.amber}22` : "transparent",
+                  transition: "background 0.18s ease",
+                }}
+              >
+                <Icon size={16} strokeWidth={2} style={{ color: active ? C.amber : "inherit" }} />
+              </span>
               <span className="wp-body">{item.label}</span>
               {item.key === "notifications" && unreadCount > 0 && (
                 <span
                   className="ml-auto font-bold rounded-full px-1.5 py-0.5"
-                  style={{ backgroundColor: C.amber, color: "#1A1206", fontSize: "10px" }}
+                  style={{
+                    backgroundColor: C.amber,
+                    color: "#1A1206",
+                    fontSize: "10px",
+                    boxShadow: `0 0 8px ${C.amber}88`,
+                  }}
                 >
                   {unreadCount}
                 </span>
@@ -1147,13 +1306,16 @@ function Sidebar({ mobileOpen, setMobileOpen }) {
         })}
       </nav>
 
-      <div className="px-3 pb-6">
+      <div className="relative px-3 pb-6">
+        <div className="h-px mb-4 mx-2" style={{ background: `linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent)` }} />
         <button
           onClick={logout}
-          className="w-full flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors"
+          className="w-full flex items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-medium wp-nav-hover"
           style={{ color: C.inkText }}
         >
-          <LogOut size={17} strokeWidth={2} />
+          <span className="flex items-center justify-center h-7 w-7 rounded-lg" style={{ backgroundColor: "transparent", transition: "background 0.18s ease" }}>
+            <LogOut size={16} strokeWidth={2} />
+          </span>
           Logout
         </button>
       </div>
@@ -1162,7 +1324,7 @@ function Sidebar({ mobileOpen, setMobileOpen }) {
 
   return (
     <>
-      <aside className="hidden lg:block w-64 shrink-0 h-screen sticky top-0">{body}</aside>
+      <aside className="hidden lg:block w-64 shrink-0 h-screen sticky top-0 wp-sidebar-shadow relative overflow-hidden">{body}</aside>
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
           <div className="w-64 h-full wp-anim-in">{body}</div>
@@ -1204,20 +1366,20 @@ function TopBar({ title, subtitle, setMobileOpen }) {
       <div className="flex items-center gap-3 shrink-0">
         <button
           onClick={() => setPage("notifications")}
-          className="relative flex h-10 w-10 items-center justify-center rounded-xl border bg-white"
+          className="relative flex h-10 w-10 items-center justify-center rounded-xl border bg-white wp-btn-ghost"
           style={{ borderColor: C.line }}
         >
           <Bell size={17} style={{ color: C.muted }} />
           {unreadCount > 0 && (
             <span
               className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full"
-              style={{ backgroundColor: C.rose }}
+              style={{ backgroundColor: C.rose, boxShadow: `0 0 6px ${C.rose}` }}
             />
           )}
         </button>
         <button
           onClick={() => setPage("settings")}
-          className="hidden sm:flex items-center gap-2.5 rounded-xl border bg-white pl-2 pr-3 py-1.5"
+          className="hidden sm:flex items-center gap-2.5 rounded-xl border bg-white pl-2 pr-3 py-1.5 wp-btn-ghost"
           style={{ borderColor: C.line }}
         >
           <Avatar name={currentUser.name} size={30} hue={222} />
@@ -1317,8 +1479,9 @@ function DashboardPage() {
       <div
         className="relative rounded-3xl overflow-hidden mb-6 wp-anim-up"
         style={{
-          background: `linear-gradient(140deg, ${C.ink} 0%, #182038 60%, #0E1626 100%)`,
-          border: `1px solid ${C.inkBorder}`,
+          background: `linear-gradient(140deg, #080E1C 0%, #101828 55%, #0A1220 100%)`,
+          border: `1px solid rgba(242,153,74,0.15)`,
+          boxShadow: `0 0 0 1px rgba(255,255,255,0.04), 0 32px 80px -20px rgba(0,0,0,0.55), 0 0 60px -20px rgba(242,153,74,0.12)`,
         }}
       >
         {/* Dot-grid background pattern */}
@@ -1438,6 +1601,7 @@ function DashboardPage() {
                   style={{
                     width: `${utilRate}%`,
                     background: `linear-gradient(90deg, ${C.amber}, ${C.amberDeep})`,
+                    boxShadow: `0 0 10px ${C.amber}88, 0 0 20px ${C.amber}44`,
                     transition: "width 1.2s cubic-bezier(0.16,1,0.3,1)",
                   }}
                 />
@@ -1480,12 +1644,18 @@ function DashboardPage() {
         {statCards.map((s, i) => (
           <div
             key={s.label}
-            className="wp-anim-up rounded-2xl border bg-white p-4 flex items-center gap-3 wp-lift"
+            className="wp-anim-up rounded-2xl border bg-white p-4 flex items-center gap-3 wp-card-hover group"
             style={{ borderColor: C.line, animationDelay: `${delays[i]}ms` }}
+            onMouseEnter={e => { e.currentTarget.style.boxShadow = `0 20px 50px -12px ${s.tint.fg}40, 0 0 0 1px ${s.tint.fg}28`; }}
+            onMouseLeave={e => { e.currentTarget.style.boxShadow = ""; }}
           >
             <div
-              className="flex h-10 w-10 items-center justify-center rounded-xl shrink-0"
-              style={{ backgroundColor: s.tint.soft, color: s.tint.fg }}
+              className="flex h-10 w-10 items-center justify-center rounded-xl shrink-0 transition-all duration-200 group-hover:scale-110"
+              style={{
+                backgroundColor: s.tint.soft,
+                color: s.tint.fg,
+                boxShadow: `0 4px 12px ${s.tint.fg}30`,
+              }}
             >
               <s.icon size={18} strokeWidth={2.2} />
             </div>
@@ -1502,7 +1672,7 @@ function DashboardPage() {
 
         {/* Fleet Status Donut */}
         <div
-          className="rounded-2xl border bg-white p-5 wp-anim-up"
+          className="rounded-2xl border bg-white p-5 wp-anim-up wp-card-hover"
           style={{ borderColor: C.line, animationDelay: "80ms" }}
         >
           <p className="text-xs font-bold tracking-wide mb-0.5" style={{ color: C.amberDeep }}>FLEET STATUS</p>
@@ -1545,7 +1715,7 @@ function DashboardPage() {
 
         {/* Department Allocation — horizontal bar */}
         <div
-          className="rounded-2xl border bg-white p-5 wp-anim-up"
+          className="rounded-2xl border bg-white p-5 wp-anim-up wp-card-hover"
           style={{ borderColor: C.line, animationDelay: "140ms" }}
         >
           <p className="text-xs font-bold tracking-wide mb-0.5" style={{ color: C.amberDeep }}>BY DEPARTMENT</p>
@@ -1578,7 +1748,7 @@ function DashboardPage() {
 
         {/* Vehicle Type Donut */}
         <div
-          className="rounded-2xl border bg-white p-5 wp-anim-up"
+          className="rounded-2xl border bg-white p-5 wp-anim-up wp-card-hover"
           style={{ borderColor: C.line, animationDelay: "200ms" }}
         >
           <p className="text-xs font-bold tracking-wide mb-0.5" style={{ color: C.amberDeep }}>VEHICLE TYPES</p>
@@ -1781,7 +1951,7 @@ function PersonRow({ icon: Icon, label, value, mono, accent }) {
 
 /* shared topbar slot wrapper so each page can add right-side controls */
 function TopBarSlot({ title, subtitle, children }) {
-  const { setPage, currentUser, unreadCount, setMobileOpen } = useApp();
+  const { setPage, currentUser, unreadCount, setMobileOpen, isDark, setIsDark } = useApp();
   return (
     <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
       <div className="flex items-center gap-3 min-w-0">
@@ -1801,7 +1971,34 @@ function TopBarSlot({ title, subtitle, children }) {
           </p>
         </div>
       </div>
-      <div className="flex items-center gap-3">{children}</div>
+      <div className="flex items-center gap-3">
+        {children}
+        <ThemeToggle isDark={isDark} onToggle={() => setIsDark((v) => !v)} />
+        <button
+          onClick={() => setPage("notifications")}
+          className="relative flex h-9 w-9 items-center justify-center rounded-xl border bg-white wp-btn-ghost"
+          style={{ borderColor: C.line }}
+        >
+          <Bell size={17} style={{ color: C.muted }} />
+          {unreadCount > 0 && (
+            <span
+              className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full"
+              style={{ backgroundColor: C.rose, boxShadow: `0 0 6px ${C.rose}` }}
+            />
+          )}
+        </button>
+        <button
+          onClick={() => setPage("settings")}
+          className="hidden sm:flex items-center gap-2 rounded-xl border bg-white pl-2 pr-3 py-1.5 wp-btn-ghost"
+          style={{ borderColor: C.line }}
+        >
+          <Avatar name={currentUser.name} size={28} hue={222} />
+          <span className="text-sm font-medium" style={{ color: C.text }}>
+            {currentUser.name}
+          </span>
+          <ChevronDown size={13} style={{ color: C.muted }} />
+        </button>
+      </div>
     </div>
   );
 }
@@ -1832,7 +2029,7 @@ function VehiclesPage() {
 
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div
-          className="flex items-center gap-2.5 rounded-xl border bg-white px-3.5 py-2.5 flex-1"
+          className="flex items-center gap-2.5 rounded-xl border bg-white px-3.5 py-2.5 flex-1 wp-input-glow"
           style={{ borderColor: C.line }}
         >
           <Search size={16} style={{ color: C.muted }} />
@@ -1848,10 +2045,10 @@ function VehiclesPage() {
             <button
               key={f}
               onClick={() => setFilter(f)}
-              className="shrink-0 rounded-xl px-3.5 py-2.5 text-sm font-medium border transition-colors"
+              className={`shrink-0 rounded-xl px-3.5 py-2.5 text-sm font-medium border transition-all duration-200 ${filter === f ? "wp-btn-primary" : "wp-btn-ghost"}`}
               style={{
                 borderColor: filter === f ? "transparent" : C.line,
-                backgroundColor: filter === f ? C.ink : "#fff",
+                backgroundColor: filter === f ? undefined : "#fff",
                 color: filter === f ? "#fff" : C.text,
               }}
             >
@@ -1872,8 +2069,10 @@ function VehiclesPage() {
                 setSelectedVehicleId(v.id);
                 setPage("dashboard");
               }}
-              className="text-left rounded-2xl border bg-white p-5 wp-lift wp-anim-up"
+              className="text-left rounded-2xl border bg-white p-5 wp-card-hover wp-anim-up group"
               style={{ borderColor: C.line, animationDelay: `${delays[i]}ms` }}
+              onMouseEnter={e => { e.currentTarget.style.boxShadow = `0 24px 60px -12px ${v.colorHex === "#23262E" ? C.amber : v.colorHex}55, 0 0 0 1.5px ${v.colorHex === "#23262E" ? C.amber : v.colorHex}35`; }}
+              onMouseLeave={e => { e.currentTarget.style.boxShadow = ""; }}
             >
               <div className="flex items-start justify-between mb-2">
                 <div>
@@ -1887,8 +2086,10 @@ function VehiclesPage() {
                 <StatusBadge status={v.status} />
               </div>
               <div
-                className="rounded-xl flex items-center justify-center py-4 my-3"
-                style={{ backgroundColor: C.paper }}
+                className="rounded-xl flex items-center justify-center py-4 my-3 relative overflow-hidden"
+                style={{
+                  background: `radial-gradient(ellipse at center, ${v.colorHex === "#23262E" ? C.amber : v.colorHex}18 0%, ${C.paper} 68%)`,
+                }}
               >
                 <CarMark colorHex={v.colorHex === "#23262E" ? C.amber : v.colorHex} imageSrc={v.image} size={120} animated={false} />
               </div>
@@ -2016,7 +2217,7 @@ function PeoplePage() {
               setSelectedVehicleId(p.vehicle.id);
               setPage("dashboard");
             }}
-            className="text-left rounded-2xl border bg-white p-5 hover:shadow-md transition-shadow wp-anim-up"
+            className="text-left rounded-2xl border bg-white p-5 wp-card-hover wp-anim-up group"
             style={{ borderColor: C.line, animationDelay: `${delays[i]}ms` }}
           >
             <div className="flex items-center gap-3 mb-4">
@@ -2398,6 +2599,16 @@ export default function App() {
 
   const unreadCount = notifications.filter((n) => !n.read).length;
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const tokens = isDark ? DARK_THEME : LIGHT_THEME;
+    const root = document.documentElement;
+    Object.entries(tokens).forEach(([key, value]) => {
+      root.style.setProperty(`--wp-${key}`, value);
+    });
+    root.setAttribute("data-theme", isDark ? "dark" : "light");
+  }, [isDark]);
 
   const logout = () => {
     setAuthenticated(false);
@@ -2418,6 +2629,8 @@ export default function App() {
     logout,
     mobileOpen,
     setMobileOpen,
+    isDark,
+    setIsDark,
   };
 
   return (
