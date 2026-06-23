@@ -1,5 +1,26 @@
 @import "tailwindcss";
 
+/* Make Tailwind's dark: variant track data-theme="dark" instead of prefers-color-scheme */
+@variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* shadcn-compatible color tokens consumed by Button and other ui components */
+@theme {
+  --color-primary: #F2994A;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #F3F5FA;
+  --color-secondary-foreground: #10131A;
+  --color-destructive: #E5484D;
+  --color-destructive-foreground: #ffffff;
+  --color-background: #F3F5FA;
+  --color-foreground: #10131A;
+  --color-accent: #FCE8D6;
+  --color-accent-foreground: #5C3A12;
+  --color-input: #E7E9F2;
+  --color-ring: #F2994A;
+  --color-border: #E7E9F2;
+  --color-muted-foreground: #6B7280;
+}
+
 body {
   margin: 0;
 }
@@ -36,6 +57,8 @@ body {
   --wp-amberWarnSoft:#2A1A06;
   --wp-roseSoft:     #2A0D0F;
   --wp-rowHover:     #1C2128;
+  --color-border: #30363D;
+  --color-muted-foreground: #8B949E;
 }
 
 /* Override Tailwind's bg-white in dark mode */
