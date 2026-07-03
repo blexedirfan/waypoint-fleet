@@ -18,6 +18,8 @@ import {
   FileText,
   ChevronRight,
   CheckCircle2,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import {
   BarChart,
@@ -34,6 +36,7 @@ import {
 import { C } from "@/constants/tokens";
 import { useApp } from "@/context/AppContext";
 import { useStagger } from "@/hooks/useStagger";
+import { useToast } from "@/hooks/useToast";
 import { TopBarSlot } from "@/components/layout/TopBarSlot";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { VehicleIllustration } from "@/components/ui/VehicleIllustration";
@@ -41,6 +44,8 @@ import { Avatar } from "@/components/ui/Avatar";
 import { MiniStat } from "@/components/ui/MiniStat";
 import { SpecRow } from "@/components/ui/SpecRow";
 import { CountUp } from "@/components/ui/CountUp";
+import { Modal } from "@/components/ui/Modal";
+import { VehicleForm } from "@/components/vehicles/VehicleForm";
 
 function PersonRow({ icon: Icon, label, value, mono, accent }) {
   return (
@@ -60,9 +65,33 @@ function PersonRow({ icon: Icon, label, value, mono, accent }) {
 }
 
 export function DashboardPage() {
-  const { vehicles, selectedVehicleId } = useApp();
+  const {
+    vehicles,
+    selectedVehicleId,
+    setSelectedVehicleId,
+    setPage,
+    isAdmin,
+    permissions,
+    updateVehicle,
+    deleteVehicle,
+  } = useApp();
   const vehicle = vehicles.find((v) => v.id === selectedVehicleId) || vehicles[0];
   const bodyColor = vehicle.colorHex === "#23262E" ? C.amber : vehicle.colorHex;
+
+  const [editOpen, setEditOpen] = useState(false);
+  const [toast, showToast] = useToast();
+
+  const canEditVehicle = isAdmin || permissions.membersCanEditVehicle;
+  const canEditAssignment = isAdmin || permissions.membersCanEditAssignment;
+  const canDelete = (isAdmin || permissions.membersCanDeleteVehicles) && vehicles.length > 1;
+
+  const handleDelete = async () => {
+    if (!confirm(`Delete ${vehicle.model} (${vehicle.assetNo})? This cannot be undone.`)) return;
+    await deleteVehicle(vehicle.id);
+    const remaining = vehicles.filter((v) => v.id !== vehicle.id);
+    setSelectedVehicleId(remaining[0]?.id);
+    setPage("vehicles");
+  };
 
   const tiltRef = useRef(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
@@ -137,6 +166,24 @@ export function DashboardPage() {
           <CalendarDays size={15} style={{ color: C.muted }} />
           {vehicle.month}
         </span>
+        <button
+          onClick={() => setEditOpen(true)}
+          title="Edit vehicle"
+          className="flex h-9 w-9 items-center justify-center rounded-xl border bg-white wp-btn-ghost"
+          style={{ borderColor: C.line, color: C.muted }}
+        >
+          <Pencil size={15} />
+        </button>
+        {canDelete && (
+          <button
+            onClick={handleDelete}
+            title="Delete vehicle"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border bg-white wp-btn-ghost"
+            style={{ borderColor: C.line, color: C.rose }}
+          >
+            <Trash2 size={15} />
+          </button>
+        )}
       </TopBarSlot>
 
       {/* ── HERO CARD ── */}
@@ -178,7 +225,11 @@ export function DashboardPage() {
                 willChange: "transform",
               }}
             >
-              <VehicleIllustration type={vehicle.type} colorHex={vehicle.colorHex} size={310} />
+              {vehicle.photo ? (
+                <img src={vehicle.photo} alt={vehicle.model} style={{ width: 310, height: 310, objectFit: "cover", borderRadius: 24 }} />
+              ) : (
+                <VehicleIllustration type={vehicle.type} colorHex={vehicle.colorHex} size={310} />
+              )}
             </div>
           </div>
 
@@ -190,6 +241,9 @@ export function DashboardPage() {
             <h2 className="wp-display text-3xl font-bold leading-tight mb-1 wp-shimmer-gold">
               {vehicle.model}
             </h2>
+            {vehicle.nickname && (
+              <p className="text-sm italic" style={{ color: C.amber }}>"{vehicle.nickname}"</p>
+            )}
             <p className="text-sm font-medium mb-5" style={{ color: C.inkText }}>
               {vehicle.type} · {vehicle.modelYear}
             </p>
@@ -359,7 +413,11 @@ export function DashboardPage() {
             <div>
               <div className="rounded-2xl flex items-center justify-center py-8 mb-4 relative overflow-hidden" style={{ backgroundColor: C.paper }}>
                 <div className="absolute inset-0 pointer-events-none" style={{ background: `radial-gradient(ellipse at center, ${bodyColor}22 0%, transparent 70%)` }} />
-                <VehicleIllustration type={vehicle.type} colorHex={vehicle.colorHex} size={200} />
+                {vehicle.photo ? (
+                  <img src={vehicle.photo} alt={vehicle.model} style={{ width: 200, height: 200, objectFit: "cover", borderRadius: 16 }} />
+                ) : (
+                  <VehicleIllustration type={vehicle.type} colorHex={vehicle.colorHex} size={200} />
+                )}
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <MiniStat icon={Calendar}    label="Model Year" value={vehicle.modelYear} tint={{ fg: C.indigo,    soft: C.indigoSoft  }} />
@@ -440,6 +498,35 @@ export function DashboardPage() {
           </div>
         </div>
       </div>
+
+      <Modal open={editOpen} onClose={() => setEditOpen(false)} title="Edit vehicle">
+        <VehicleForm
+          initialValues={vehicle}
+          canEditVehicle={canEditVehicle}
+          canEditAssignment={canEditAssignment}
+          submitLabel="Save changes"
+          onCancel={() => setEditOpen(false)}
+          onSubmit={async (patch) => {
+            try {
+              await updateVehicle(vehicle.id, patch);
+              setEditOpen(false);
+              showToast("Vehicle updated");
+            } catch (e) {
+              showToast(e.message || "Could not update vehicle");
+            }
+          }}
+        />
+      </Modal>
+
+      {toast && (
+        <div
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-white shadow-lg wp-anim-up"
+          style={{ backgroundColor: C.ink }}
+        >
+          <CheckCircle2 size={16} style={{ color: C.emerald }} />
+          {toast}
+        </div>
+      )}
     </div>
   );
 }

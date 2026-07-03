@@ -5,7 +5,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export function TopBarSlot({ title, subtitle, children }) {
-  const { setPage, currentUser, unreadCount, setMobileOpen, isDark, setIsDark } = useApp();
+  const { setPage, currentUser, unreadCount, setMobileOpen, isDark, setIsDark, isAdmin } = useApp();
 
   return (
     <div className="flex items-center justify-between gap-4 mb-6 flex-wrap">
@@ -58,6 +58,14 @@ export function TopBarSlot({ title, subtitle, children }) {
           <span className="text-sm font-medium" style={{ color: C.text }}>
             {currentUser.name}
           </span>
+          {isAdmin && (
+            <span
+              className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+              style={{ backgroundColor: C.amberSoft, color: C.amberDeep }}
+            >
+              ADMIN
+            </span>
+          )}
           <ChevronDown size={13} style={{ color: C.muted }} />
         </button>
       </div>

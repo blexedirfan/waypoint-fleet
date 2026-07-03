@@ -1,17 +1,24 @@
 import { useState, useMemo } from "react";
-import { Search, UserCircle2, Building2 } from "lucide-react";
+import { Search, UserCircle2, Building2, Plus } from "lucide-react";
 import { C } from "@/constants/tokens";
 import { useApp } from "@/context/AppContext";
 import { useStagger } from "@/hooks/useStagger";
+import { useToast } from "@/hooks/useToast";
 import { TopBarSlot } from "@/components/layout/TopBarSlot";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { VehicleIllustration } from "@/components/ui/VehicleIllustration";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { Modal } from "@/components/ui/Modal";
+import { VehicleForm } from "@/components/vehicles/VehicleForm";
 
 export function VehiclesPage() {
-  const { vehicles, setSelectedVehicleId, setPage } = useApp();
+  const { vehicles, setSelectedVehicleId, setPage, isAdmin, permissions, createVehicle } = useApp();
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("All");
+  const [addOpen, setAddOpen] = useState(false);
+  const [toast, showToast] = useToast();
+
+  const canAdd = isAdmin || permissions.membersCanAddVehicles;
 
   const filtered = useMemo(
     () =>
@@ -64,6 +71,15 @@ export function VehiclesPage() {
             </button>
           ))}
         </div>
+
+        {canAdd && (
+          <button
+            onClick={() => setAddOpen(true)}
+            className="shrink-0 flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white wp-btn-primary"
+          >
+            <Plus size={15} /> Add vehicle
+          </button>
+        )}
       </div>
 
       {filtered.length === 0 ? (
@@ -93,7 +109,11 @@ export function VehiclesPage() {
                   className="rounded-xl flex items-center justify-center py-4 my-3 relative overflow-hidden"
                   style={{ background: `radial-gradient(ellipse at center, ${tint}18 0%, ${C.paper} 68%)` }}
                 >
-                  <VehicleIllustration type={v.type} colorHex={v.colorHex} size={120} />
+                  {v.photo ? (
+                    <img src={v.photo} alt={v.model} style={{ width: 120, height: 90, objectFit: "cover", borderRadius: 12 }} />
+                  ) : (
+                    <VehicleIllustration type={v.type} colorHex={v.colorHex} size={120} />
+                  )}
                 </div>
 
                 <div className="flex items-center justify-between text-sm">
@@ -107,6 +127,35 @@ export function VehiclesPage() {
               </button>
             );
           })}
+        </div>
+      )}
+
+      <Modal open={addOpen} onClose={() => setAddOpen(false)} title="Add vehicle">
+        <VehicleForm
+          isCreate
+          initialValues={{ status: "Active", fuelType: "Petrol", transmission: "Automatic" }}
+          canEditVehicle
+          canEditAssignment
+          submitLabel="Add vehicle"
+          onCancel={() => setAddOpen(false)}
+          onSubmit={async (data) => {
+            try {
+              await createVehicle(data);
+              setAddOpen(false);
+              showToast("Vehicle added");
+            } catch (e) {
+              showToast(e.message || "Could not add vehicle");
+            }
+          }}
+        />
+      </Modal>
+
+      {toast && (
+        <div
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-white shadow-lg wp-anim-up"
+          style={{ backgroundColor: C.ink }}
+        >
+          {toast}
         </div>
       )}
     </div>

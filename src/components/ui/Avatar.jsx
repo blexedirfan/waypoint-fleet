@@ -7,7 +7,7 @@ function initialsOf(name) {
     .join("");
 }
 
-export function Avatar({ name, hue = 220, size = 44 }) {
+export function Avatar({ name, hue = 220, size = 44, src }) {
   const bg  = `hsl(${hue}, 62%, 50%)`;
   const bg2 = `hsl(${hue + 28}, 70%, 42%)`;
 
@@ -21,6 +21,7 @@ export function Avatar({ name, hue = 220, size = 44 }) {
         background: `linear-gradient(135deg, ${bg}, ${bg2})`,
         boxShadow: `0 6px 16px -6px ${bg}, 0 0 0 2px ${bg}30`,
         transition: "box-shadow 0.2s ease, transform 0.2s ease",
+        overflow: "hidden",
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = `0 8px 20px -4px ${bg}, 0 0 0 3px ${bg}55`;
@@ -31,7 +32,20 @@ export function Avatar({ name, hue = 220, size = 44 }) {
         e.currentTarget.style.transform = "scale(1)";
       }}
     >
-      {initialsOf(name)}
+      {src ? (
+        <img
+          src={src}
+          alt={name}
+          style={{
+            width: size,
+            height: size,
+            objectFit: "cover",
+            borderRadius: "50%",
+          }}
+        />
+      ) : (
+        initialsOf(name)
+      )}
     </div>
   );
 }

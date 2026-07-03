@@ -16,19 +16,7 @@ import { Field } from "@/components/ui/Field";
 import { InputIcon } from "@/components/ui/InputIcon";
 import { SignalDot } from "@/components/ui/SignalDot";
 
-function emailToName(email) {
-  const part = (email || "").split("@")[0];
-  if (!part) return "Guest";
-  return (
-    part
-      .split(/[._\d]+/)
-      .filter(Boolean)
-      .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
-      .join(" ") || "Guest"
-  );
-}
-
-export function AuthScreen({ onAuthenticated }) {
+export function AuthScreen({ signIn, signUp }) {
   const [mode, setMode] = useState("signin");
   const [showPw, setShowPw] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -44,7 +32,7 @@ export function AuthScreen({ onAuthenticated }) {
 
   const update = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setError("");
     if (!form.email || !form.password) {
       setError("Please fill in email and password.");
@@ -56,11 +44,17 @@ export function AuthScreen({ onAuthenticated }) {
       if (form.password !== form.confirm) { setError("Passwords don't match."); return; }
     }
     setSubmitting(true);
-    setTimeout(() => {
-      const name = mode === "signup" ? form.name : emailToName(form.email);
-      onAuthenticated({ name, email: form.email });
+    try {
+      if (mode === "signup") {
+        await signUp({ name: form.name, email: form.email, password: form.password });
+      } else {
+        await signIn({ email: form.email, password: form.password });
+      }
+    } catch (e) {
+      setError(e.message || "Something went wrong.");
+    } finally {
       setSubmitting(false);
-    }, 850);
+    }
   };
 
   const onKeyDown = (e) => { if (e.key === "Enter") handleSubmit(); };

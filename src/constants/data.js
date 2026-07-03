@@ -171,41 +171,6 @@ export const VEHICLES = [
   },
 ];
 
-export const INITIAL_NOTIFICATIONS = [
-  {
-    id: 1,
-    title: "Maintenance due",
-    desc: "ARV-24-552 (Toyota Camry) is in for scheduled service.",
-    time: "2h ago",
-    read: false,
-    tone: "warn",
-  },
-  {
-    id: 2,
-    title: "New allocation",
-    desc: "ARV-24-198 (BYD Atto 3) assigned to Bilal Ahmed — Operations.",
-    time: "1d ago",
-    read: false,
-    tone: "good",
-  },
-  {
-    id: 3,
-    title: "Vehicle inactive",
-    desc: "ARV-23-905 (Toyota Hilux) marked inactive, pending reassignment.",
-    time: "3d ago",
-    read: false,
-    tone: "muted",
-  },
-  {
-    id: 4,
-    title: "Document expiring",
-    desc: "Registration renewal for ARV-24-330 due in 12 days.",
-    time: "5d ago",
-    read: true,
-    tone: "warn",
-  },
-];
-
 export const NAV_ITEMS = [
   { key: "dashboard",     label: "Dashboard",     icon: "LayoutDashboard" },
   { key: "vehicles",      label: "Vehicles",      icon: "Car"             },

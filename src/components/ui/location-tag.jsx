@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react"
 
-export function LocationTag({ city = "San Francisco", country = "USA", timezone = "PST" }) {
+export function LocationTag({ city = "San Francisco", region = "California", timeZone = "America/Los_Angeles" }) {
   const [isHovered, setIsHovered] = useState(false)
   const [currentTime, setCurrentTime] = useState("")
+  const [tzAbbrev, setTzAbbrev] = useState("")
 
   useEffect(() => {
     const updateTime = () => {
@@ -12,13 +13,19 @@ export function LocationTag({ city = "San Francisco", country = "USA", timezone 
           hour: "2-digit",
           minute: "2-digit",
           hour12: false,
+          timeZone,
         }),
+      )
+      setTzAbbrev(
+        new Intl.DateTimeFormat("en-US", { timeZone, timeZoneName: "short" })
+          .formatToParts(now)
+          .find((p) => p.type === "timeZoneName")?.value || timeZone,
       )
     }
     updateTime()
     const interval = setInterval(updateTime, 1000)
     return () => clearInterval(interval)
-  }, [])
+  }, [timeZone])
 
   return (
     <button
@@ -43,7 +50,7 @@ export function LocationTag({ city = "San Francisco", country = "USA", timezone 
             opacity: isHovered ? 0 : 1,
           }}
         >
-          {city}, {country}
+          {city}{region ? `, ${region}` : ""}
         </span>
 
         <span
@@ -53,7 +60,7 @@ export function LocationTag({ city = "San Francisco", country = "USA", timezone 
             opacity: isHovered ? 1 : 0,
           }}
         >
-          {currentTime} {timezone}
+          {currentTime} {tzAbbrev}
         </span>
       </div>
 

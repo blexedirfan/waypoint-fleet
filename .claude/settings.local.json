@@ -3,7 +3,25 @@
     "allow": [
       "Bash(npx vite *)",
       "Bash(node -e ' *)",
-      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('peerDeps:', d.get\\('peerDependencies', {}\\)\\); print\\('main:', d.get\\('main'\\)\\); print\\('module:', d.get\\('module'\\)\\); print\\('exports:', list\\(d.get\\('exports', {}\\).keys\\(\\)\\)[:5]\\)\")"
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('peerDeps:', d.get\\('peerDependencies', {}\\)\\); print\\('main:', d.get\\('main'\\)\\); print\\('module:', d.get\\('module'\\)\\); print\\('exports:', list\\(d.get\\('exports', {}\\).keys\\(\\)\\)[:5]\\)\")",
+      "PowerShell(npm.cmd run dev)",
+      "PowerShell(npm.cmd install)",
+      "Bash(npx eslint *)",
+      "Bash(npm run *)",
+      "Bash(git -C /e/waypoint-fleet status --short)",
+      "Bash(git -C /e/waypoint-fleet diff --stat)",
+      "Bash(npx --no-install playwright --version)",
+      "Bash(npm.cmd ls *)",
+      "Bash(npx --no-install playwright install chromium --with-deps)",
+      "Bash(node \"C:\\\\Users\\\\itssh\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\e--waypoint-fleet\\\\bd61c416-4595-449b-b6f8-9c0589ac1af1\\\\scratchpad\\\\verify.mjs\")",
+      "Bash(node _verify_tmp.mjs)",
+      "Bash(node _debug_tmp.mjs)",
+      "Bash(node _verify2_tmp.mjs)",
+      "Bash(node _verify3_tmp.mjs)",
+      "Bash(node _debug2_tmp.mjs)",
+      "Bash(node _verify4_tmp.mjs)",
+      "Bash(node _verify5_tmp.mjs)",
+      "Bash(node _verify6_tmp.mjs)"
     ]
   }
 }

@@ -2,8 +2,10 @@ import { Bell } from "lucide-react";
 import { C } from "@/constants/tokens";
 import { useApp } from "@/context/AppContext";
 import { useStagger } from "@/hooks/useStagger";
+import { formatRelativeTime } from "@/lib/relativeTime";
 import { TopBarSlot } from "@/components/layout/TopBarSlot";
 import { SignalDot } from "@/components/ui/SignalDot";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 const TONE_COLOR = {
   warn:  { fg: C.amberWarn, bg: C.amberWarnSoft },
@@ -12,15 +14,7 @@ const TONE_COLOR = {
 };
 
 export function NotificationsPage() {
-  const { notifications, setNotifications } = useApp();
-
-  const markAllRead = () =>
-    setNotifications((list) => list.map((n) => ({ ...n, read: true })));
-
-  const toggleRead = (id) =>
-    setNotifications((list) =>
-      list.map((n) => (n.id === id ? { ...n, read: !n.read } : n))
-    );
+  const { notifications, toggleRead, markAllRead } = useApp();
 
   const delays = useStagger(notifications.length, 50);
 
@@ -36,6 +30,9 @@ export function NotificationsPage() {
         </button>
       </TopBarSlot>
 
+      {notifications.length === 0 ? (
+        <EmptyState message="No notifications yet — activity on your fleet will show up here." />
+      ) : (
       <div className="space-y-3">
         {notifications.map((n, i) => {
           const tone = TONE_COLOR[n.tone] || TONE_COLOR.muted;
@@ -59,7 +56,7 @@ export function NotificationsPage() {
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-sm font-semibold" style={{ color: C.text }}>{n.title}</p>
-                  <span className="text-xs shrink-0" style={{ color: C.muted }}>{n.time}</span>
+                  <span className="text-xs shrink-0" style={{ color: C.muted }}>{formatRelativeTime(n.time)}</span>
                 </div>
                 <p className="text-sm mt-0.5" style={{ color: C.muted }}>{n.desc}</p>
               </div>
@@ -68,6 +65,7 @@ export function NotificationsPage() {
           );
         })}
       </div>
+      )}
     </div>
   );
 }
