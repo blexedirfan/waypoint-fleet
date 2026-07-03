@@ -1,64 +1,39 @@
-import { getItem, setItem } from "@/lib/storage";
+import { apiFetch, setToken, getToken, clearToken } from "@/lib/apiClient";
 
-/* CONTRACT for backend dev — replace the localStorage bodies below with
-   fetch() calls to your real endpoints; keep these signatures/return shapes
+/* Talks to the real API server (see server/src/routes/auth.js). Exported
+   signatures/return shapes are unchanged from the old localStorage version,
    so useAuth.js needs no changes:
      signUp({name, email, password}) => Promise<{ user: {id,name,email,phone,avatar,role} }>
      signIn({email, password})       => Promise<{ user: {id,name,email,phone,avatar,role} }>
      signOut()                       => Promise<void>
      getSession()                    => Promise<{ user: {...} } | null>
    Errors are surfaced by throwing — callers catch and read `.message`.
-   `role` is "admin" | "member" — the very first account ever created is
-   seeded as "admin" (a bootstrap superuser); everyone after is "member". */
-
-function delay(ms = 300) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function toPublicUser(u) {
-  return { id: u.id, name: u.name, email: u.email, phone: u.phone, avatar: u.avatar, role: u.role };
-}
+   The JWT issued by the server is kept in localStorage (the only local
+   storage left in the app) and sent as a Bearer token on every request. */
 
 export async function signUp({ name, email, password }) {
-  await delay();
-  const users = getItem("users", []);
-  if (users.some((u) => u.email.toLowerCase() === email.toLowerCase())) {
-    throw new Error("An account with this email already exists.");
-  }
-  const user = {
-    id: crypto.randomUUID(),
-    name,
-    email,
-    password,
-    phone: "",
-    avatar: "",
-    role: users.length === 0 ? "admin" : "member",
-  };
-  setItem("users", [...users, user]);
-  setItem("session", { userId: user.id });
-  return { user: toPublicUser(user) };
+  const data = await apiFetch("/api/auth/signup", { method: "POST", body: { name, email, password } });
+  setToken(data.token);
+  return { user: data.user };
 }
 
 export async function signIn({ email, password }) {
-  await delay();
-  const users = getItem("users", []);
-  const user = users.find((u) => u.email.toLowerCase() === email.toLowerCase());
-  if (!user || user.password !== password) {
-    throw new Error("Invalid email or password.");
-  }
-  setItem("session", { userId: user.id });
-  return { user: toPublicUser(user) };
+  const data = await apiFetch("/api/auth/signin", { method: "POST", body: { email, password } });
+  setToken(data.token);
+  return { user: data.user };
 }
 
 export async function signOut() {
-  await delay(80);
-  setItem("session", null);
+  clearToken();
 }
 
 export async function getSession() {
-  const session = getItem("session", null);
-  if (!session) return null;
-  const users = getItem("users", []);
-  const user = users.find((u) => u.id === session.userId);
-  return user ? { user: toPublicUser(user) } : null;
+  if (!getToken()) return null;
+  try {
+    const data = await apiFetch("/api/auth/session");
+    return { user: data.user };
+  } catch {
+    clearToken();
+    return null;
+  }
 }

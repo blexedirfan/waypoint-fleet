@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from "react";
 import * as notificationService from "@/services/notificationService";
 
-export function useNotifications() {
+export function useNotifications(isAuthenticated) {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
+    if (!isAuthenticated) return;
     notificationService.getNotifications().then(setNotifications);
-  }, []);
+  }, [isAuthenticated]);
 
   const addNotification = useCallback(async (data) => {
     const notification = await notificationService.addNotification(data);

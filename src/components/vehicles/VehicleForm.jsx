@@ -21,6 +21,7 @@ import {
 import { C } from "@/constants/tokens";
 import { Field } from "@/components/ui/Field";
 import { InputIcon } from "@/components/ui/InputIcon";
+import { ImageUpload } from "@/components/ui/ImageUpload";
 
 function ReadOnlyField({ label, value }) {
   return (
@@ -57,6 +58,7 @@ const emptyVehicle = {
   seating: "",
   status: "Active",
   notes: "",
+  photo: "",
   owner: "",
   assignedTo: "",
   department: "",
@@ -77,25 +79,38 @@ export function VehicleForm({
   initialValues,
   canEditVehicle,
   canEditAssignment,
+  canEditPhoto,
   onSubmit,
   onCancel,
   submitLabel = "Save changes",
   isCreate = false,
+  photoRequired = false,
+  hideCancel = false,
 }) {
   const [form, setForm] = useState(() => ({
     ...emptyVehicle,
     ...initialValues,
     person: { ...emptyVehicle.person, ...(initialValues?.person || {}) },
   }));
+  const [photoError, setPhotoError] = useState("");
 
   const editVehicle = isCreate || canEditVehicle;
   const editAssignment = isCreate || canEditAssignment;
+  // Photo follows ownership independent of the membersCanEditVehicle flag
+  // (matches the backend's rule) — falls back to canEditVehicle only if the
+  // caller didn't pass it explicitly, for backward compatibility.
+  const editPhoto = isCreate || (canEditPhoto ?? canEditVehicle);
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
   const setPerson = (key) => (e) => setForm((f) => ({ ...f, person: { ...f.person, [key]: e.target.value } }));
+  const setPhoto = (dataUrl) => { setForm((f) => ({ ...f, photo: dataUrl })); setPhotoError(""); };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (photoRequired && !form.photo) {
+      setPhotoError("A vehicle photo is required.");
+      return;
+    }
     const data = { ...form };
     if (!isCreate) delete data.assetNo;
     onSubmit(data);
@@ -124,6 +139,27 @@ export function VehicleForm({
       )}
 
       <SectionHeader>VEHICLE</SectionHeader>
+
+      <div className="mb-4">
+        {editPhoto ? (
+          <div className="flex items-center gap-3">
+            <ImageUpload
+              value={form.photo}
+              onChange={setPhoto}
+              size={80}
+              shape="rounded"
+              label={photoRequired ? "Vehicle photo (required)" : "Vehicle photo"}
+            />
+            {photoError && <span className="text-xs font-medium" style={{ color: C.rose }}>{photoError}</span>}
+          </div>
+        ) : form.photo ? (
+          <div>
+            <span className="text-xs font-medium mb-1.5 block" style={{ color: C.muted }}>Vehicle photo</span>
+            <img src={form.photo} alt={form.model} style={{ width: 80, height: 80, objectFit: "cover", borderRadius: 14 }} />
+          </div>
+        ) : null}
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {editVehicle ? (
           <>
@@ -308,14 +344,16 @@ export function VehicleForm({
       </div>
 
       <div className="flex items-center justify-end gap-3 mt-6">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="rounded-xl px-4 py-2.5 text-sm font-semibold wp-btn-ghost border"
-          style={{ borderColor: C.line, color: C.text }}
-        >
-          Cancel
-        </button>
+        {!hideCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="rounded-xl px-4 py-2.5 text-sm font-semibold wp-btn-ghost border"
+            style={{ borderColor: C.line, color: C.text }}
+          >
+            Cancel
+          </button>
+        )}
         <button
           type="submit"
           className="rounded-xl px-4 py-2.5 text-sm font-semibold text-white"

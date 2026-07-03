@@ -2,17 +2,18 @@ import { useState, useEffect, useCallback } from "react";
 import * as vehicleService from "@/services/vehicleService";
 import { VEHICLES } from "@/constants/data";
 
-export function useVehicles() {
+export function useVehicles(isAuthenticated) {
   const [vehicles, setVehicles] = useState(VEHICLES);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    if (!isAuthenticated) return;
     vehicleService
       .getVehicles()
       .then(setVehicles)
       .finally(() => setLoading(false));
-  }, []);
+  }, [isAuthenticated]);
 
   const updateVehicle = useCallback(async (id, patch) => {
     setSaving(true);

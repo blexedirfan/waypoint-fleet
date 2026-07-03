@@ -66,6 +66,7 @@ function PersonRow({ icon: Icon, label, value, mono, accent }) {
 
 export function DashboardPage() {
   const {
+    currentUser,
     vehicles,
     selectedVehicleId,
     setSelectedVehicleId,
@@ -81,9 +82,10 @@ export function DashboardPage() {
   const [editOpen, setEditOpen] = useState(false);
   const [toast, showToast] = useToast();
 
-  const canEditVehicle = isAdmin || permissions.membersCanEditVehicle;
-  const canEditAssignment = isAdmin || permissions.membersCanEditAssignment;
-  const canDelete = (isAdmin || permissions.membersCanDeleteVehicles) && vehicles.length > 1;
+  const isOwner = vehicle.createdBy === currentUser.id;
+  const canEditVehicle = isAdmin || (isOwner && permissions.membersCanEditVehicle);
+  const canEditAssignment = isAdmin || (isOwner && permissions.membersCanEditAssignment);
+  const canDelete = (isAdmin || (isOwner && permissions.membersCanDeleteVehicles)) && vehicles.length > 1;
 
   const handleDelete = async () => {
     if (!confirm(`Delete ${vehicle.model} (${vehicle.assetNo})? This cannot be undone.`)) return;
@@ -504,6 +506,7 @@ export function DashboardPage() {
           initialValues={vehicle}
           canEditVehicle={canEditVehicle}
           canEditAssignment={canEditAssignment}
+          canEditPhoto={isAdmin || isOwner}
           submitLabel="Save changes"
           onCancel={() => setEditOpen(false)}
           onSubmit={async (patch) => {

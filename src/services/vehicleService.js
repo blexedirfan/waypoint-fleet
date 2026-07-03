@@ -1,62 +1,27 @@
-import { getItem, setItem } from "@/lib/storage";
-import { VEHICLES } from "@/constants/data";
+import { apiFetch } from "@/lib/apiClient";
 
-/* CONTRACT for backend dev — replace the localStorage bodies below with
-   fetch() calls to your real endpoints; keep these signatures/return shapes
-   so useVehicles.js needs no changes:
+/* Talks to the real API server (see server/src/routes/vehicles.js).
      getVehicles()             => Promise<Vehicle[]>
      updateVehicle(id, patch)  => Promise<Vehicle>
      createVehicle(data)       => Promise<Vehicle>
      deleteVehicle(id)         => Promise<void>
-   Vehicle is the existing shape in constants/data.js plus two optional
-   user-editable fields: `nickname` (string) and `photo` (base64 data URL).
-   createVehicle uses `data.assetNo` as the new vehicle's `id` — it's the
-   primary key referenced everywhere (selectedVehicleId, list keys), so it
-   must be unique and is never changed afterward. */
-
-function delay(ms = 200) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function seedIfEmpty() {
-  const existing = getItem("vehicles", null);
-  if (existing === null) {
-    setItem("vehicles", VEHICLES);
-    return VEHICLES;
-  }
-  return existing;
-}
+   The server enforces the same admin/member permission rules the UI
+   already implies (see permissionsService.js) — a 403 here means the
+   signed-in account genuinely isn't allowed to make this change, not just
+   that the button was hidden client-side. */
 
 export async function getVehicles() {
-  await delay();
-  return seedIfEmpty();
+  return apiFetch("/api/vehicles");
 }
 
 export async function updateVehicle(id, patch) {
-  await delay();
-  const vehicles = seedIfEmpty();
-  const idx = vehicles.findIndex((v) => v.id === id);
-  if (idx === -1) throw new Error("Vehicle not found.");
-  const updated = vehicles.map((v, i) => (i === idx ? { ...v, ...patch } : v));
-  setItem("vehicles", updated);
-  return updated[idx];
+  return apiFetch(`/api/vehicles/${encodeURIComponent(id)}`, { method: "PATCH", body: patch });
 }
 
 export async function createVehicle(data) {
-  await delay();
-  const vehicles = seedIfEmpty();
-  if (!data.assetNo) throw new Error("Asset No. is required.");
-  if (vehicles.some((v) => v.id === data.assetNo)) {
-    throw new Error("A vehicle with this Asset No. already exists.");
-  }
-  const vehicle = { id: data.assetNo, ...data };
-  setItem("vehicles", [...vehicles, vehicle]);
-  return vehicle;
+  return apiFetch("/api/vehicles", { method: "POST", body: data });
 }
 
 export async function deleteVehicle(id) {
-  await delay();
-  const vehicles = seedIfEmpty();
-  const updated = vehicles.filter((v) => v.id !== id);
-  setItem("vehicles", updated);
+  await apiFetch(`/api/vehicles/${encodeURIComponent(id)}`, { method: "DELETE" });
 }

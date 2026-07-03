@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -m 3 http://127.0.0.1:4000/api/health)",
+      "Bash(echo \" \\(exit $?\\)\")",
+      "Bash(curl -s -m 3 http://localhost:4000/api/health)",
+      "Bash(curl -s -m 3 -o /dev/null -w \"%{http_code}\\\\n\" http://127.0.0.1:5173/)",
+      "Bash(curl -s -m 3 -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:5173/)",
+      "Bash(git -C /e/waypoint-fleet status --short)",
+      "Bash(echo \" <- health check exit: $?\")",
+      "Bash(netstat -ano)",
+      "Bash(curl -s -m 3 -o /dev/null -w \"127.0.0.1:5173 -> %{http_code}\\\\n\" http://127.0.0.1:5173/)",
+      "Bash(curl -s -m 3 -o /dev/null -w \"localhost:5173 -> %{http_code}\\\\n\" http://localhost:5173/)",
+      "Bash(node _verify_networkfix_tmp.mjs)",
+      "Bash(tasklist //FI \"IMAGENAME eq node.exe\")",
+      "Bash(curl -s -m 3 -v http://localhost:4000/api/health)",
+      "Bash(wmic process *)",
+      "Bash(node _final_verify_tmp.mjs)",
+      "Bash(curl -s -X POST http://localhost:4000/api/auth/signin -H \"Content-Type: application/json\" -d '{\"email\":\"nonexistent@check.com\",\"password\":\"x\"}')",
+      "Bash(node -e ' *)",
+      "Bash(node /e/waypoint-fleet/_check_users_tmp.cjs)",
+      "Bash(node /e/waypoint-fleet/_promote_admin_tmp.cjs)",
+      "Bash(node /e/waypoint-fleet/_gen_test_image_tmp.cjs)",
+      "Bash(node _verify_upload_tmp.mjs)",
+      "Bash(curl -s -m 3 -o /dev/null -w \"web: %{http_code}\\\\n\" http://localhost:5173/)",
+      "Bash(node /e/waypoint-fleet/_check_schema_tmp.cjs)",
+      "Bash(node _verify_ownership_tmp.mjs)",
+      "Bash(node _debug_ownership_tmp.mjs)",
+      "Bash(node _check_vehicles_tmp.mjs)",
+      "Bash(node /e/waypoint-fleet/_check_db_tmp.cjs)",
+      "Bash(node /e/waypoint-fleet/_check_db2_tmp.cjs)",
+      "Bash(node _verify_admin_tmp.mjs)"
+    ]
+  }
+}

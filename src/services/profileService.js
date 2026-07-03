@@ -1,33 +1,15 @@
-import { getItem, setItem } from "@/lib/storage";
+import { apiFetch } from "@/lib/apiClient";
 
-/* CONTRACT for backend dev — replace the localStorage bodies below with
-   fetch() calls to your real endpoints; keep these signatures/return shapes
-   so useProfile.js needs no changes:
+/* Talks to the real API server (see server/src/routes/profile.js).
      getProfile(userId)           => Promise<{id,name,email,phone,avatar}>
-     updateProfile(userId, patch) => Promise<{id,name,email,phone,avatar}> */
+     updateProfile(userId, patch) => Promise<{id,name,email,phone,avatar}>
+   `userId` is accepted for signature compatibility but unused — the server
+   identifies the caller from the Bearer token, always acting on "me". */
 
-function delay(ms = 250) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+export async function getProfile(_userId) {
+  return apiFetch("/api/profile");
 }
 
-function toPublicUser(u) {
-  return { id: u.id, name: u.name, email: u.email, phone: u.phone, avatar: u.avatar };
-}
-
-export async function getProfile(userId) {
-  await delay();
-  const users = getItem("users", []);
-  const user = users.find((u) => u.id === userId);
-  if (!user) throw new Error("Profile not found.");
-  return toPublicUser(user);
-}
-
-export async function updateProfile(userId, patch) {
-  await delay();
-  const users = getItem("users", []);
-  const idx = users.findIndex((u) => u.id === userId);
-  if (idx === -1) throw new Error("Profile not found.");
-  users[idx] = { ...users[idx], ...patch };
-  setItem("users", users);
-  return toPublicUser(users[idx]);
+export async function updateProfile(_userId, patch) {
+  return apiFetch("/api/profile", { method: "PATCH", body: patch });
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import * as permissionsService from "@/services/permissionsService";
 
-export function usePermissions() {
+export function usePermissions(isAuthenticated) {
   const [permissions, setPermissions] = useState({
     membersCanEditVehicle: true,
     membersCanEditAssignment: false,
@@ -11,8 +11,9 @@ export function usePermissions() {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
+    if (!isAuthenticated) return;
     permissionsService.getPermissions().then(setPermissions);
-  }, []);
+  }, [isAuthenticated]);
 
   const updatePermissions = useCallback(async (patch) => {
     setSaving(true);

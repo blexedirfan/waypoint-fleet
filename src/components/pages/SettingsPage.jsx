@@ -18,7 +18,6 @@ export function SettingsPage() {
     updateAvatar,
     savingProfile,
     vehicles,
-    selectedVehicleId,
     updateVehicle,
     savingVehicle,
     isAdmin,
@@ -26,7 +25,7 @@ export function SettingsPage() {
     updatePermissions,
   } = useApp();
 
-  const vehicle = vehicles.find((v) => v.id === selectedVehicleId) || vehicles[0];
+  const vehicle = vehicles.find((v) => v.createdBy === currentUser.id);
   const deviceLocation = getDeviceLocation();
 
   const [form, setForm] = useState({
@@ -126,7 +125,8 @@ export function SettingsPage() {
           </button>
         </div>
 
-        {/* My vehicle */}
+        {/* My vehicle — only shown if the signed-in account actually owns one */}
+        {vehicle && (
         <div
           className="rounded-2xl border bg-white p-5 sm:p-6 wp-anim-up"
           style={{ borderColor: C.line, animationDelay: "50ms" }}
@@ -135,47 +135,42 @@ export function SettingsPage() {
             MY VEHICLE
           </p>
 
-          {!vehicle ? (
-            <p className="text-sm" style={{ color: C.muted }}>Loading vehicle...</p>
-          ) : (
-            <>
-              <div className="flex items-center gap-4 mb-4">
-                <ImageUpload
-                  value={vehicle.photo}
-                  onChange={(dataUrl) => updateVehicle(vehicle.id, { photo: dataUrl })}
-                  size={96}
-                  shape="rounded"
-                  label="Vehicle photo"
-                />
-                <div>
-                  <p className="wp-display font-semibold text-base" style={{ color: C.text }}>{vehicle.nickname || vehicle.model}</p>
-                  <p className="text-sm" style={{ color: C.muted }}>{vehicle.model} · {vehicle.assetNo}</p>
-                </div>
-              </div>
+          <div className="flex items-center gap-4 mb-4">
+            <ImageUpload
+              value={vehicle.photo}
+              onChange={(dataUrl) => updateVehicle(vehicle.id, { photo: dataUrl })}
+              size={96}
+              shape="rounded"
+              label="Vehicle photo"
+            />
+            <div>
+              <p className="wp-display font-semibold text-base" style={{ color: C.text }}>{vehicle.nickname || vehicle.model}</p>
+              <p className="text-sm" style={{ color: C.muted }}>{vehicle.model} · {vehicle.assetNo}</p>
+            </div>
+          </div>
 
-              <Field label="Nickname">
-                <InputIcon icon={Tag}>
-                  <input
-                    value={nickname}
-                    onChange={(e) => setNickname(e.target.value)}
-                    placeholder="e.g. My Sonata"
-                    className="w-full bg-transparent outline-none text-sm wp-body"
-                    style={{ color: C.text }}
-                  />
-                </InputIcon>
-              </Field>
+          <Field label="Nickname">
+            <InputIcon icon={Tag}>
+              <input
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                placeholder="e.g. My Sonata"
+                className="w-full bg-transparent outline-none text-sm wp-body"
+                style={{ color: C.text }}
+              />
+            </InputIcon>
+          </Field>
 
-              <button
-                onClick={saveNickname}
-                disabled={savingVehicle}
-                className="mt-4 rounded-xl px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
-                style={{ background: `linear-gradient(135deg, ${C.amber}, ${C.amberDeep})` }}
-              >
-                {savingVehicle ? "Saving..." : "Save changes"}
-              </button>
-            </>
-          )}
+          <button
+            onClick={saveNickname}
+            disabled={savingVehicle}
+            className="mt-4 rounded-xl px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+            style={{ background: `linear-gradient(135deg, ${C.amber}, ${C.amberDeep})` }}
+          >
+            {savingVehicle ? "Saving..." : "Save changes"}
+          </button>
         </div>
+        )}
 
         {/* Notification preferences */}
         <div
