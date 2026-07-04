@@ -10,8 +10,8 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: CORS_ORIGIN
-        value: https://your-app.vercel.app
-      - key: DATABASE_URL
+        value: https://waypoint-fleet.vercel.app
+      - key: postgresql://waypoint:j7jDb5S0u5L1r0l4btqpZUDzA3JLlD4o@dpg-d94n5u5ckfvc73aahjhg-a/waypoint_fleet
         fromDatabase:
           name: waypoint-fleet-db
           property: connectionString

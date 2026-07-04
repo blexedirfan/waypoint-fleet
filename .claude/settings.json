@@ -32,7 +32,26 @@
       "Bash(node _verify_admin_tmp.mjs)",
       "Bash(echo \" <- exit: $?\")",
       "Bash(grep -v \"^$\")",
-      "Bash(node _final_check_tmp.mjs)"
+      "Bash(node _final_check_tmp.mjs)",
+      "Bash(git rm *)",
+      "Bash(docker --version)",
+      "Bash(docker compose *)",
+      "PowerShell(docker --version)",
+      "PowerShell(docker compose version)",
+      "Bash(npm install *)",
+      "Bash(ls \"/c/Program Files/Docker/Docker/resources/bin\" 2>&1; which psql postgres pg_ctl 2>&1)",
+      "Read(//c/Program Files/Docker/Docker/resources/**)",
+      "Bash(docker info *)",
+      "Bash(tasklist)",
+      "Bash(taskkill //F //IM node.exe)",
+      "Bash(curl -s http://localhost:4000/api/health)",
+      "Bash(curl -s -X POST http://localhost:4000/api/auth/signup -H \"Content-Type: application/json\" -d '{\"name\":\"Test Admin\",\"email\":\"admin@test.com\",\"password\":\"password123\"}')",
+      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\);process.stdin.on\\('end',\\(\\)=>{const v=JSON.parse\\(d\\);console.log\\('all read:', v.every\\(n=>n.read\\)\\)}\\)\")",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(curl -s -w \"\\\\nHTTP_STATUS:%{http_code}\\\\n\" https://waypoint-fleet-api.onrender.com/api/health)",
+      "Bash(curl -s -w \"\\\\nHTTP_STATUS:%{http_code}\\\\n\" -X POST https://waypoint-fleet-api.onrender.com/api/auth/signin -H \"Content-Type: application/json\" -d '{\"email\":\"nonexistent@test.com\",\"password\":\"whatever\"}')"
     ]
   }
 }
