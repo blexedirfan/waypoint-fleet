@@ -51,7 +51,8 @@
       "Bash(git commit -m ' *)",
       "Bash(git push *)",
       "Bash(curl -s -w \"\\\\nHTTP_STATUS:%{http_code}\\\\n\" https://waypoint-fleet-api.onrender.com/api/health)",
-      "Bash(curl -s -w \"\\\\nHTTP_STATUS:%{http_code}\\\\n\" -X POST https://waypoint-fleet-api.onrender.com/api/auth/signin -H \"Content-Type: application/json\" -d '{\"email\":\"nonexistent@test.com\",\"password\":\"whatever\"}')"
+      "Bash(curl -s -w \"\\\\nHTTP_STATUS:%{http_code}\\\\n\" -X POST https://waypoint-fleet-api.onrender.com/api/auth/signin -H \"Content-Type: application/json\" -d '{\"email\":\"nonexistent@test.com\",\"password\":\"whatever\"}')",
+      "Bash(git fetch *)"
     ]
   }
 }
