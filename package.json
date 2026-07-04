@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "dev:server": "npm --prefix server run dev",
-    "dev:all": "concurrently -n web,api -c blue,green \"npm run dev\" \"npm run dev:server\"",
+    "db:up": "docker compose up -d",
+    "db:down": "docker compose down",
+    "dev:all": "npm run db:up && concurrently -n web,api -c blue,green \"npm run dev\" \"npm run dev:server\"",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"

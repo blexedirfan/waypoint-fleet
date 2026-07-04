@@ -39,6 +39,11 @@ app.use("/api/notifications", notificationsRouter);
 
 app.get("/api/health", (req, res) => res.json({ ok: true }));
 
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ error: "Something went wrong." });
+});
+
 const port = process.env.PORT || 4000;
 app.listen(port, () => {
   console.log(`Waypoint Fleet API listening on http://localhost:${port}`);

@@ -1,6 +1,6 @@
 # Waypoint Fleet
 
-A fleet management dashboard: sign in, view/edit vehicles and their assignments, manage notifications, and (as an admin) control what regular users are allowed to do. Backed by a real Express + SQLite API — not just a frontend demo.
+A fleet management dashboard: sign in, view/edit vehicles and their assignments, manage notifications, and (as an admin) control what regular users are allowed to do. Backed by a real Express + PostgreSQL API — not just a frontend demo.
 
 This document explains how the app is put together — specifically the **data layer** (services → hooks → context → pages, and now a real API + database underneath) — so anyone new to the codebase can find their way around.
 
@@ -17,20 +17,22 @@ This document explains how the app is put together — specifically the **data l
 
 **Backend** (`server/`)
 - **Express** — routing
-- **`node:sqlite`** — Node's built-in SQLite module (requires Node ≥ 22.5; still experimental upstream, but zero native/`node-gyp` dependencies, unlike `better-sqlite3`)
+- **PostgreSQL** via **`pg`** — real relational database, same engine locally (Docker) and in production (Render managed Postgres)
 - **bcryptjs** — password hashing (pure JS, no native compilation)
 - **jsonwebtoken** — issues/verifies the auth token
 - **cors** — allows the Vite dev server to call the API cross-origin
 
 ## 2. Getting started
 
+Requires Docker (for local Postgres) alongside Node.
+
 ```bash
 npm install               # frontend deps (root)
 npm --prefix server install   # backend deps
-npm run dev:all           # starts BOTH the Vite dev server (5173) and the API (4000)
+npm run dev:all           # brings up local Postgres (docker compose), then Vite (5173) + API (4000)
 ```
 
-`npm run dev:all` is the one command you want day-to-day. `server/data.sqlite` is created and seeded automatically on first boot — no manual setup step. Individually: `npm run dev` (frontend only) / `npm run dev:server` (backend only).
+`npm run dev:all` is the one command you want day-to-day — it runs `npm run db:up` (starts the `docker-compose.yml` Postgres container) before starting both servers. Tables are created and seeded automatically on first boot — no manual migration step. Individually: `npm run dev` (frontend only) / `npm run dev:server` (backend only) / `npm run db:up` / `npm run db:down`.
 
 ```bash
 npm run build     # production build (frontend)
@@ -81,13 +83,15 @@ src/
 └── main.jsx
 
 server/                         # the real backend
-├── data.sqlite                 # created + seeded automatically on first boot (gitignored)
 └── src/
     ├── index.js                 # Express app: cors, json body parsing, mounts routes, listens on PORT
-    ├── db.js                    # opens data.sqlite, CREATE TABLE IF NOT EXISTS, seeds permissions + mock fleet
+    ├── db.js                    # pg Pool + CREATE TABLE IF NOT EXISTS, seeds permissions + mock fleet
+    ├── asyncHandler.js          # wraps async route handlers so thrown errors reach Express's error middleware
     ├── seedVehicles.js          # the same 5-vehicle demo fleet, ported from src/constants/data.js
     ├── middleware/auth.js       # requireAuth: verifies the Bearer JWT, attaches req.user = {id, role}
     └── routes/                  # auth.js, profile.js, vehicles.js, permissions.js, notifications.js
+
+docker-compose.yml               # local Postgres container (matches production engine)
 ```
 
 ## 4. Architecture: the 3-layer data system
@@ -109,7 +113,7 @@ Component/Page
    Express API (server/src/routes/*.js)
       │  requireAuth middleware, then real permission checks, then a query
       ▼
-  server/data.sqlite
+  PostgreSQL (docker-compose locally, Render managed Postgres in production)
 ```
 
 This used to end at `localStorage` — every service now hits the real API instead, with the exact same function signatures, so nothing above the service layer changed when the backend was built.
@@ -134,7 +138,7 @@ Each file in `src/services/` has a `CONTRACT` comment at the top. All are `async
 
 **Server-side enforcement, not just UI gating.** `PATCH /api/vehicles/:assetNo` diffs the request against the existing row and classifies which *changed* fields are "vehicle spec" vs "assignment" (same grouping as `VehicleForm.jsx`'s two sections), then checks `isAdmin || permissions.<flag>` for whichever group actually changed — a 403 from the API means the account genuinely isn't allowed to make that change, independent of what the UI shows. Same idea for add/delete (`membersCanAddVehicles`/`membersCanDeleteVehicles`) and for `PATCH /api/permissions` (admin-only, full stop).
 
-`server/src/db.js` seeds `data.sqlite` from `server/src/seedVehicles.js` (a port of the old mock `VEHICLES` array) the first time the `vehicles` table is empty, so a fresh database still boots with the same demo fleet.
+`server/src/db.js` seeds the `vehicles` table from `server/src/seedVehicles.js` (a port of the old mock `VEHICLES` array) the first time it's empty, so a fresh database still boots with the same demo fleet.
 
 ## 6. The hooks
 
@@ -202,19 +206,20 @@ Everything above is composed once in `App.jsx` into a single context value. Any 
 
 Allocations, People, and Reports have **no local data of their own** — they all derive from the same live `vehicles` array, so any edit anywhere shows up everywhere immediately.
 
-## 10. Moving off SQLite (e.g. to Postgres in production)
+## 10. Database: PostgreSQL everywhere
 
-The backend was built against `node:sqlite` because this machine has no PostgreSQL/Docker installed and Node's built-in SQLite module needs zero native dependencies — practical for local dev, not necessarily what you want in production. `database/schema.sql` documents the equivalent PostgreSQL schema (slightly more normalized field types) as the production-oriented reference. To move:
+Local dev and production both run real PostgreSQL — no SQLite anywhere anymore, so there's no dev/prod drift:
 
-1. Stand up Postgres, run `database/schema.sql` against it.
-2. Rewrite `server/src/db.js`'s query calls for your Postgres client of choice (e.g. `pg`) — the route files (`server/src/routes/*.js`) call `db.prepare(...).get/all/run(...)`-shaped helpers, so the smallest-diff path is writing a thin adapter with the same shape rather than rewriting every route.
-3. Everything above `server/src/db.js` — routes, middleware, and the entire frontend — needs no changes; the API's request/response contracts don't change.
+- **Local**: `docker-compose.yml` runs a `postgres:16-alpine` container; `npm run dev:all` starts it automatically (`npm run db:up`). Connection string lives in `server/.env` as `DATABASE_URL`.
+- **Production (Render)**: `render.yaml` provisions a managed Postgres database alongside the API service and injects its connection string into the API's `DATABASE_URL` env var automatically (`fromDatabase`).
+- **Schema**: `server/src/db.js` still owns the schema directly (`CREATE TABLE IF NOT EXISTS ...` + a couple of `information_schema`-checked migrations), run automatically on server boot — there's no separate migration tool yet. `database/schema.sql` is a stale early design doc (different column names/types, e.g. `seating_capacity` vs the `seating` actually used) and does **not** reflect the live schema; treat `db.js` as the source of truth, or delete/rewrite that file to match.
+- **Route files unchanged in shape**: `server/src/db.js` exports a `db.prepare(sql).get/all/run(...)` adapter that rewrites `?` placeholders to Postgres's `$1, $2, ...` under the hood, so every route file's SQL text is identical to the old SQLite version — the only diff per route was adding `async`/`await` and wrapping handlers in `asyncHandler` (`server/src/asyncHandler.js`), since Express 4 doesn't catch rejected promises on its own.
 
 ## 11. Known limitations
 
 - **Passwords are hashed** (bcrypt) — no longer plain text now that a real backend exists.
-- **`node:sqlite` is still experimental** upstream (Node logs an `ExperimentalWarning` on boot). It behaved correctly through every scenario tested here (persistence across restarts, concurrent reads/writes), but pin your Node version in production and watch Node's release notes if you stay on SQLite long-term.
+- **`database/schema.sql` is stale** — it predates the Postgres migration and uses different column names/types than what `server/src/db.js` actually creates. Don't run it against the database; update or remove it.
 - **The JWT lives in `localStorage`**, not an `httpOnly` cookie — simpler to wire up (no cookie/CORS credential dance) but technically more exposed to XSS than a cookie-based session would be. Reasonable for this stage; revisit if this ever handles real user data.
 - **Notifications are a single fleet-wide feed**, not scoped per-user — matches the frontend's original design, but means every signed-in account sees every notification. See the comment in `server/src/db.js` if you want to scope it later.
-- `assetNo`/`id` on a vehicle is immutable after creation (it's the primary key referenced by `selectedVehicleId` and list keys throughout the app, and the actual SQLite primary key too) — the Edit form intentionally shows it read-only.
+- `assetNo`/`id` on a vehicle is immutable after creation (it's the primary key referenced by `selectedVehicleId` and list keys throughout the app, and the actual database primary key too) — the Edit form intentionally shows it read-only.
 - No automated tests yet.

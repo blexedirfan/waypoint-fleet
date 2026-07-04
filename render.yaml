@@ -11,3 +11,13 @@ services:
         generateValue: true
       - key: CORS_ORIGIN
         value: https://your-app.vercel.app
+      - key: DATABASE_URL
+        fromDatabase:
+          name: waypoint-fleet-db
+          property: connectionString
+
+databases:
+  - name: waypoint-fleet-db
+    plan: free
+    databaseName: waypoint_fleet
+    user: waypoint

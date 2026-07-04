@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { db, rowToPermissions } from "../db.js";
 import { requireAuth } from "../middleware/auth.js";
+import { asyncHandler } from "../asyncHandler.js";
 
 export const permissionsRouter = Router();
 
@@ -11,23 +12,23 @@ const PATCHABLE = {
   membersCanDeleteVehicles: "members_can_delete_vehicles",
 };
 
-permissionsRouter.get("/", requireAuth, (req, res) => {
-  const row = db.prepare("SELECT * FROM permissions WHERE id = 1").get();
+permissionsRouter.get("/", requireAuth, asyncHandler(async (req, res) => {
+  const row = await db.prepare("SELECT * FROM permissions WHERE id = 1").get();
   res.json(rowToPermissions(row));
-});
+}));
 
-permissionsRouter.patch("/", requireAuth, (req, res) => {
+permissionsRouter.patch("/", requireAuth, asyncHandler(async (req, res) => {
   if (req.user.role !== "admin") {
     return res.status(403).json({ error: "Only admins can change member permissions." });
   }
-  const existing = db.prepare("SELECT * FROM permissions WHERE id = 1").get();
+  const existing = await db.prepare("SELECT * FROM permissions WHERE id = 1").get();
   const patch = req.body || {};
   const merged = { ...existing };
   for (const [apiField, column] of Object.entries(PATCHABLE)) {
     if (apiField in patch) merged[column] = patch[apiField] ? 1 : 0;
   }
 
-  db.prepare(`
+  await db.prepare(`
     UPDATE permissions SET
       members_can_edit_vehicle = ?, members_can_edit_assignment = ?,
       members_can_add_vehicles = ?, members_can_delete_vehicles = ?
@@ -37,5 +38,5 @@ permissionsRouter.patch("/", requireAuth, (req, res) => {
     merged.members_can_add_vehicles, merged.members_can_delete_vehicles
   );
 
-  res.json(rowToPermissions(db.prepare("SELECT * FROM permissions WHERE id = 1").get()));
-});
+  res.json(rowToPermissions(await db.prepare("SELECT * FROM permissions WHERE id = 1").get()));
+}));

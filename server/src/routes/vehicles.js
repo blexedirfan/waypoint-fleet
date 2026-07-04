@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { db, rowToVehicle } from "../db.js";
 import { requireAuth } from "../middleware/auth.js";
+import { asyncHandler } from "../asyncHandler.js";
 
 export const vehiclesRouter = Router();
 
@@ -47,30 +48,30 @@ function personChanged(existingRow, patch) {
   });
 }
 
-vehiclesRouter.get("/", requireAuth, (req, res) => {
-  const rows = db.prepare("SELECT * FROM vehicles ORDER BY created_at ASC").all();
+vehiclesRouter.get("/", requireAuth, asyncHandler(async (req, res) => {
+  const rows = await db.prepare("SELECT * FROM vehicles ORDER BY created_at ASC").all();
   res.json(rows.map(rowToVehicle));
-});
+}));
 
-vehiclesRouter.post("/", requireAuth, (req, res) => {
+vehiclesRouter.post("/", requireAuth, asyncHandler(async (req, res) => {
   const isAdmin = req.user.role === "admin";
-  const perms = getPermissionsRow();
-  const { c: ownedCount } = db.prepare("SELECT COUNT(*) as c FROM vehicles WHERE created_by = ?").get(req.user.id);
+  const perms = await getPermissionsRow();
+  const { c: ownedCount } = await db.prepare("SELECT COUNT(*) as c FROM vehicles WHERE created_by = ?").get(req.user.id);
 
   // Everyone gets to create their first vehicle unconditionally — that's
   // what makes the mandatory onboarding flow actually unblockable. Beyond
   // that first one, additional vehicles still need the admin's go-ahead.
-  if (ownedCount > 0 && !isAdmin && !perms.members_can_add_vehicles) {
+  if (Number(ownedCount) > 0 && !isAdmin && !perms.members_can_add_vehicles) {
     return res.status(403).json({ error: "You don't have permission to add vehicles." });
   }
 
   const data = req.body || {};
   if (!data.assetNo) return res.status(400).json({ error: "Asset No. is required." });
-  const existing = db.prepare("SELECT asset_no FROM vehicles WHERE asset_no = ?").get(data.assetNo);
+  const existing = await db.prepare("SELECT asset_no FROM vehicles WHERE asset_no = ?").get(data.assetNo);
   if (existing) return res.status(409).json({ error: "A vehicle with this Asset No. already exists." });
 
   const person = data.person || {};
-  db.prepare(`
+  await db.prepare(`
     INSERT INTO vehicles (
       asset_no, model, type, model_year, month, engine_cc, color, color_hex,
       fuel_type, transmission, seating, status, owner, assigned_to, department,
@@ -88,18 +89,18 @@ vehiclesRouter.post("/", requireAuth, (req, res) => {
     req.user.id
   );
 
-  const row = db.prepare("SELECT * FROM vehicles WHERE asset_no = ?").get(data.assetNo);
+  const row = await db.prepare("SELECT * FROM vehicles WHERE asset_no = ?").get(data.assetNo);
   res.json(rowToVehicle(row));
-});
+}));
 
-vehiclesRouter.patch("/:assetNo", requireAuth, (req, res) => {
-  const existing = db.prepare("SELECT * FROM vehicles WHERE asset_no = ?").get(req.params.assetNo);
+vehiclesRouter.patch("/:assetNo", requireAuth, asyncHandler(async (req, res) => {
+  const existing = await db.prepare("SELECT * FROM vehicles WHERE asset_no = ?").get(req.params.assetNo);
   if (!existing) return res.status(404).json({ error: "Vehicle not found." });
 
   const patch = req.body || {};
   const isAdmin = req.user.role === "admin";
   const isOwner = existing.created_by === req.user.id;
-  const perms = getPermissionsRow();
+  const perms = await getPermissionsRow();
 
   const vehicleChanges = changedFields(existing, patch, VEHICLE_FIELD_TO_COLUMN);
   const assignmentChanges = changedFields(existing, patch, ASSIGNMENT_FIELD_TO_COLUMN);
@@ -131,13 +132,13 @@ vehiclesRouter.patch("/:assetNo", requireAuth, (req, res) => {
   if ("nickname" in patch) merged.nickname = patch.nickname;
   if ("photo" in patch) merged.photo = patch.photo;
 
-  db.prepare(`
+  await db.prepare(`
     UPDATE vehicles SET
       model = ?, type = ?, model_year = ?, month = ?, engine_cc = ?, color = ?, color_hex = ?,
       fuel_type = ?, transmission = ?, seating = ?, status = ?, owner = ?, assigned_to = ?,
       department = ?, allocated_on = ?, notes = ?, nickname = ?, photo = ?, person_name = ?,
       person_title = ?, person_department = ?, person_office = ?, person_employee_id = ?,
-      person_email = ?, person_contact = ?, person_hue = ?, updated_at = datetime('now')
+      person_email = ?, person_contact = ?, person_hue = ?, updated_at = now()
     WHERE asset_no = ?
   `).run(
     merged.model, merged.type, merged.model_year, merged.month, merged.engine_cc, merged.color, merged.color_hex,
@@ -147,20 +148,20 @@ vehiclesRouter.patch("/:assetNo", requireAuth, (req, res) => {
     merged.person_email, merged.person_contact, merged.person_hue, req.params.assetNo
   );
 
-  const row = db.prepare("SELECT * FROM vehicles WHERE asset_no = ?").get(req.params.assetNo);
+  const row = await db.prepare("SELECT * FROM vehicles WHERE asset_no = ?").get(req.params.assetNo);
   res.json(rowToVehicle(row));
-});
+}));
 
-vehiclesRouter.delete("/:assetNo", requireAuth, (req, res) => {
-  const existing = db.prepare("SELECT created_by FROM vehicles WHERE asset_no = ?").get(req.params.assetNo);
+vehiclesRouter.delete("/:assetNo", requireAuth, asyncHandler(async (req, res) => {
+  const existing = await db.prepare("SELECT created_by FROM vehicles WHERE asset_no = ?").get(req.params.assetNo);
   if (!existing) return res.status(404).json({ error: "Vehicle not found." });
 
   const isAdmin = req.user.role === "admin";
   const isOwner = existing.created_by === req.user.id;
-  const perms = getPermissionsRow();
+  const perms = await getPermissionsRow();
   if (!isAdmin && !(isOwner && perms.members_can_delete_vehicles)) {
     return res.status(403).json({ error: "You don't have permission to delete this vehicle." });
   }
-  db.prepare("DELETE FROM vehicles WHERE asset_no = ?").run(req.params.assetNo);
+  await db.prepare("DELETE FROM vehicles WHERE asset_no = ?").run(req.params.assetNo);
   res.json({ ok: true });
-});
+}));
