@@ -1,5 +1,6 @@
 import pg from "pg";
 import { SEED_VEHICLES } from "./seedVehicles.js";
+import { SEED_ALARMS } from "./seedAlarms.js";
 
 const { Pool } = pg;
 
@@ -119,6 +120,34 @@ await db.exec(`
     read INTEGER NOT NULL DEFAULT 0,
     created_at TEXT NOT NULL
   );
+
+  CREATE TABLE IF NOT EXISTS alarms (
+    id TEXT PRIMARY KEY,
+    device_id TEXT NOT NULL,
+    driver_name TEXT,
+    alarm_type TEXT NOT NULL,
+    fleet TEXT,
+    alarm_status TEXT,
+    begin_time TIMESTAMPTZ NOT NULL,
+    start_position TEXT,
+    start_speed TEXT,
+    reporting_time TIMESTAMPTZ,
+    status TEXT NOT NULL DEFAULT 'Pending' CHECK (status IN ('Pending','Acknowledged')),
+    process_user TEXT,
+    process_time TIMESTAMPTZ,
+    process_driver TEXT,
+    remark TEXT,
+    geofence_name TEXT,
+    end_time TIMESTAMPTZ,
+    end_position TEXT,
+    end_speed TEXT,
+    re_upload TEXT,
+    start_details TEXT,
+    end_details TEXT,
+    alarm_duration TEXT,
+    process_memo TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  );
 `);
 
 // Migration for databases created before `created_by` existed — Postgres
@@ -151,6 +180,26 @@ if (Number(count) === 0) {
       v.fuelType, v.transmission, v.seating, v.status, v.owner, v.assignedTo, v.department,
       v.allocatedOn, v.notes, v.person.name, v.person.title, v.person.department,
       v.person.office, v.person.employeeId, v.person.email, v.person.contact, v.person.hue
+    );
+  }
+}
+
+const { count: alarmCount } = await db.prepare("SELECT COUNT(*) as count FROM alarms").get();
+if (Number(alarmCount) === 0) {
+  const insertAlarm = db.prepare(`
+    INSERT INTO alarms (
+      id, device_id, driver_name, alarm_type, fleet, alarm_status, begin_time,
+      start_position, start_speed, reporting_time, status, process_user, process_time,
+      process_driver, remark, geofence_name, end_time, end_position, end_speed,
+      re_upload, start_details, end_details, alarm_duration, process_memo
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+  for (const a of SEED_ALARMS) {
+    await insertAlarm.run(
+      a.id, a.deviceId, a.driverName, a.alarmType, a.fleet, a.alarmStatus, a.beginTime,
+      a.startPosition, a.startSpeed, a.reportingTime, a.status, a.processUser, a.processTime,
+      a.processDriver, a.remark, a.geofenceName, a.endTime, a.endPosition, a.endSpeed,
+      a.reUpload, a.startDetails, a.endDetails, a.alarmDuration, a.processMemo
     );
   }
 }
@@ -207,5 +256,34 @@ export function rowToPermissions(row) {
     membersCanEditAssignment: !!row.members_can_edit_assignment,
     membersCanAddVehicles: !!row.members_can_add_vehicles,
     membersCanDeleteVehicles: !!row.members_can_delete_vehicles,
+  };
+}
+
+export function rowToAlarm(row) {
+  return {
+    id: row.id,
+    deviceId: row.device_id,
+    driverName: row.driver_name,
+    alarmType: row.alarm_type,
+    fleet: row.fleet,
+    alarmStatus: row.alarm_status,
+    beginTime: row.begin_time,
+    startPosition: row.start_position,
+    startSpeed: row.start_speed,
+    reportingTime: row.reporting_time,
+    status: row.status,
+    processUser: row.process_user,
+    processTime: row.process_time,
+    processDriver: row.process_driver,
+    remark: row.remark,
+    geofenceName: row.geofence_name,
+    endTime: row.end_time,
+    endPosition: row.end_position,
+    endSpeed: row.end_speed,
+    reUpload: row.re_upload,
+    startDetails: row.start_details,
+    endDetails: row.end_details,
+    alarmDuration: row.alarm_duration,
+    processMemo: row.process_memo,
   };
 }

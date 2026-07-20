@@ -9,6 +9,8 @@ services:
     envVars:
       - key: JWT_SECRET
         generateValue: true
+      - key: HOWEN_WEBHOOK_SECRET
+        generateValue: true
       - key: CORS_ORIGIN
         value: https://waypoint-fleet.vercel.app
       - key: DATABASE_URL

@@ -1,5 +1,6 @@
 import {
   LayoutDashboard,
+  ShieldAlert,
   Car,
   ClipboardList,
   Users,
@@ -14,6 +15,7 @@ import { useApp } from "@/context/AppContext";
 
 const NAV_ITEMS = [
   { key: "dashboard",     label: "Dashboard",     Icon: LayoutDashboard },
+  { key: "alarms",        label: "Alarms",        Icon: ShieldAlert     },
   { key: "vehicles",      label: "Vehicles",      Icon: Car             },
   { key: "allocations",   label: "Allocations",   Icon: ClipboardList   },
   { key: "people",        label: "People",        Icon: Users           },

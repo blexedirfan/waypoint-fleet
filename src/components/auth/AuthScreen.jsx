@@ -321,7 +321,7 @@ export function AuthScreen({ signIn, signUp }) {
               className="font-semibold"
               style={{ color: C.amberDeep }}
             >
-              {mode === "signin" ? "Create an account" : "Sign in"}
+              {mode === "signin" ? "Create an account" : "Sign in"} 
             </button>
           </p>
         </div>

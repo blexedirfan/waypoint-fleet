@@ -8,6 +8,7 @@ import { useProfile } from "@/hooks/useProfile";
 import { useVehicles } from "@/hooks/useVehicles";
 import { usePermissions } from "@/hooks/usePermissions";
 import { useNotifications } from "@/hooks/useNotifications";
+import { useAlarms } from "@/hooks/useAlarms";
 import { LIGHT_THEME, DARK_THEME, FONT_FACE } from "@/constants/tokens";
 
 const STATUS_TONE = { Active: "good", Maintenance: "warn", Inactive: "muted" };
@@ -18,6 +19,7 @@ export default function App() {
   const { vehicles, loading: vehiclesLoading, saving: savingVehicle, updateVehicle, createVehicle, deleteVehicle } = useVehicles(isAuthenticated);
   const { permissions, updatePermissions } = usePermissions(isAuthenticated);
   const { notifications, unreadCount, addNotification, toggleRead, markAllRead } = useNotifications(isAuthenticated);
+  const { alarms, saving: savingAlarm, acknowledgeAlarm, refetch: refetchAlarms } = useAlarms(isAuthenticated);
   const isAdmin = user?.role === "admin";
   const ownsAVehicle = vehicles.some((v) => v.createdBy === user?.id);
   const needsOnboarding = isAuthenticated && !isAdmin && !vehiclesLoading && !ownsAVehicle;
@@ -71,6 +73,19 @@ export default function App() {
     return updated;
   };
 
+  const handleAcknowledgeAlarm = async (id, data) => {
+    const before = alarms.find((a) => a.id === id);
+    const updated = await acknowledgeAlarm(id, data);
+    if (before) {
+      addNotification({
+        title: "Alarm acknowledged",
+        desc: `${updated.alarmType} on ${updated.deviceId} marked resolved.`,
+        tone: "good",
+      });
+    }
+    return updated;
+  };
+
   const handleDeleteVehicle = async (id) => {
     const before = vehicles.find((v) => v.id === id);
     await deleteVehicle(id);
@@ -114,6 +129,10 @@ export default function App() {
     toggleRead,
     markAllRead,
     unreadCount,
+    alarms,
+    savingAlarm,
+    acknowledgeAlarm: handleAcknowledgeAlarm,
+    refetchAlarms,
     logout: signOut,
     mobileOpen,
     setMobileOpen,

@@ -2,6 +2,7 @@ import { C } from "@/constants/tokens";
 import { useApp } from "@/context/AppContext";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { DashboardPage }     from "@/components/pages/DashboardPage";
+import { AlarmDashboardPage } from "@/components/pages/AlarmDashboardPage";
 import { VehiclesPage }      from "@/components/pages/VehiclesPage";
 import { AllocationsPage }   from "@/components/pages/AllocationsPage";
 import { PeoplePage }        from "@/components/pages/PeoplePage";
@@ -11,6 +12,7 @@ import { SettingsPage }      from "@/components/pages/SettingsPage";
 
 const PAGES = {
   dashboard:     DashboardPage,
+  alarms:        AlarmDashboardPage,
   vehicles:      VehiclesPage,
   allocations:   AllocationsPage,
   people:        PeoplePage,

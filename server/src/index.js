@@ -6,6 +6,7 @@ import { profileRouter } from "./routes/profile.js";
 import { vehiclesRouter } from "./routes/vehicles.js";
 import { permissionsRouter } from "./routes/permissions.js";
 import { notificationsRouter } from "./routes/notifications.js";
+import { alarmsRouter } from "./routes/alarms.js";
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use("/api/profile", profileRouter);
 app.use("/api/vehicles", vehiclesRouter);
 app.use("/api/permissions", permissionsRouter);
 app.use("/api/notifications", notificationsRouter);
+app.use("/api/alarms", alarmsRouter);
 
 app.get("/api/health", (req, res) => res.json({ ok: true }));
 
